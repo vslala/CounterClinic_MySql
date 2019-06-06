@@ -54,4 +54,42 @@ public class UserTest {
         Assert.assertNotNull(newClinicWithRooms);
         Assert.assertFalse(newClinicWithRooms.getClinicRooms().isEmpty());
     }
+
+    @Test
+    public void receptionistUserCanAssignRoomsToDoctor() {
+        user.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
+        ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
+        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
+        Assert.assertTrue(clinicAssigned);
+    }
+
+    @Test
+    public void superAdminUserCanAssignRoomsToDoctor() {
+        user.setRoles(Arrays.asList(UserRole.SUPERADMIN));
+        ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
+        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
+        Assert.assertTrue(clinicAssigned);
+    }
+
+    @Test
+    public void itShouldThrowExceptionIfUnauthorizedUserTriesToAssignClinicRoomToDoctor() {
+        expectedException.expect(ActionNotAllowedException.class);
+        user.setRoles(Arrays.asList(UserRole.DOCTOR));
+        ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
+        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
+        Assert.assertTrue(clinicAssigned);
+    }
+
+    @Test
+    public void receptionUserCanCreateNewWalkInAppointmentForThePatientsByAppointedDoctor() {
+        user.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
+        String patientFirstName = "Patient First Name";
+        String patientLastName  = "Patient Last Name";
+        User appointedDoctor = new User();
+        appointedDoctor.setRoles(Arrays.asList(UserRole.DOCTOR));
+        appointedDoctor.setClinicRoom(ClinicRoom.newInstance("ClinicRoom"));
+
+        WalkInAppointment walkInAppointment = user.createWalkInAppointment(patientFirstName, patientLastName, appointedDoctor);
+        Assert.assertNotNull(walkInAppointment);
+    }
 }
