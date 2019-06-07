@@ -1,6 +1,8 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.user.walkinappointment.WalkInAppointment;
+import com.codesvenue.counterclinic.clinic.Clinic;
+import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

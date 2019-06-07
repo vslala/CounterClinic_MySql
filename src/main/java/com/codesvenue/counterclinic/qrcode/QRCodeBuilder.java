@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.user.walkinappointment;
+package com.codesvenue.counterclinic.qrcode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;

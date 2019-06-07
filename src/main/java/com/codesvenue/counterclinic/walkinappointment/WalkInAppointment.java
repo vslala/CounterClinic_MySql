@@ -1,6 +1,6 @@
-package com.codesvenue.counterclinic.user.walkinappointment;
+package com.codesvenue.counterclinic.walkinappointment;
 
-import com.codesvenue.counterclinic.user.ClinicRoomNotAssignedToDoctorException;
+import com.codesvenue.counterclinic.clinic.ClinicRoomNotAssignedToDoctorException;
 import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
 import lombok.Data;

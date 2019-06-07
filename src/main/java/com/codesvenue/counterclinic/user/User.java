@@ -1,6 +1,8 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.user.walkinappointment.WalkInAppointment;
+import com.codesvenue.counterclinic.clinic.Clinic;
+import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import lombok.Getter;
 import lombok.Setter;
 

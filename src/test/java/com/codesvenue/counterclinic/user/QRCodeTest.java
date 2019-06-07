@@ -1,8 +1,8 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.user.walkinappointment.QRCode;
-import com.codesvenue.counterclinic.user.walkinappointment.QRCodeBuilder;
-import com.codesvenue.counterclinic.user.walkinappointment.QRCodeException;
+import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
+import com.codesvenue.counterclinic.qrcode.QRCodeException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

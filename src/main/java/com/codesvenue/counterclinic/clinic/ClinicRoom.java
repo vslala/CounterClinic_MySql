@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.user;
+package com.codesvenue.counterclinic.clinic;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

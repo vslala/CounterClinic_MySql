@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.user;
+package com.codesvenue.counterclinic.clinic;
 
 public class ClinicRoomNotAssignedToDoctorException extends RuntimeException {
     public ClinicRoomNotAssignedToDoctorException(String msg) {
