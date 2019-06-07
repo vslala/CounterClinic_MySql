@@ -1,7 +1,9 @@
-package com.codesvenue.counterclinic.user;
+package com.codesvenue.counterclinic.user.walkinappointment;
 
+import com.codesvenue.counterclinic.user.ClinicRoomNotAssignedToDoctorException;
+import com.codesvenue.counterclinic.user.User;
+import com.codesvenue.counterclinic.user.UserRole;
 import lombok.Data;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

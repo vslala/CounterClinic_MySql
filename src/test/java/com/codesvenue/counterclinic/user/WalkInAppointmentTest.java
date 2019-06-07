@@ -1,5 +1,7 @@
 package com.codesvenue.counterclinic.user;
 
+import com.codesvenue.counterclinic.user.walkinappointment.AppointedUserIsNotADoctor;
+import com.codesvenue.counterclinic.user.walkinappointment.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,6 +53,5 @@ public class WalkInAppointmentTest {
 
         Assert.assertNotNull(newWalkInAppointment);
         Assert.assertNotNull(newWalkInAppointment.getCreatedAt());
-
     }
 }
