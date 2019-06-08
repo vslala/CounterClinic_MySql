@@ -7,7 +7,7 @@ import java.util.Map;
 
 @NoArgsConstructor
 @Data
-public class QRCode {
+public class QRCode implements Cloneable {
 
     private Integer qrCodeId;
     private Integer attachmentId;
@@ -49,5 +49,10 @@ public class QRCode {
     public QRCode qrCodeData(Map<String, Object> qrCodeData) {
         this.qrCodeData = qrCodeData;
         return this;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -12,6 +12,7 @@ import java.util.Objects;
 
 public class User {
 
+    @Getter
     private Integer userId;
 
     @Setter
@@ -25,9 +26,13 @@ public class User {
     }
 
     public Clinic createNewClinic(String clinicName) {
-        if (isSuperAdmin())
+        if (isSuperAdmin() || isAdmin())
             return Clinic.newInstance(clinicName);
         throw new ActionNotAllowedException("User do not have privileges to create new clinic.");
+    }
+
+    private boolean isAdmin() {
+        return !Objects.isNull(roles) && this.roles.contains(UserRole.ADMIN);
     }
 
     private boolean isSuperAdmin() {
