@@ -44,7 +44,8 @@ public class UserServiceImpl implements UserService {
                 walkInAppointmentInfoForm.getLastName(),
                 userRepository.findDoctorById(walkInAppointmentInfoForm.getDoctorId()));
         WalkInAppointment newWalkInAppointment = userRepository.createNewWalkInAppointment(walkInAppointment);
-        CompletableFuture.runAsync(()-> generateQRCode(newWalkInAppointment));
+        generateQRCode(newWalkInAppointment);
+//        CompletableFuture.runAsync(()-> generateQRCode(newWalkInAppointment));
         return newWalkInAppointment;
     }
 

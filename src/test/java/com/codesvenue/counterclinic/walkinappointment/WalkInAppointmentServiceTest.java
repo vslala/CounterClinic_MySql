@@ -11,4 +11,9 @@ public class WalkInAppointmentServiceTest {
     public void setup() {
         walkInAppointmentService = new WalkInAppointmentServiceImpl();
     }
+
+    @Test
+    public void itShouldFetchTheApproximateTimeRemainingForTheAppointment() {
+        
+    }
 }
