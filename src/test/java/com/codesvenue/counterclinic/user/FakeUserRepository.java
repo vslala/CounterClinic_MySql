@@ -48,4 +48,18 @@ public class FakeUserRepository implements UserRepository {
         newQRCode.setQrCodeId(1);
         return newQRCode;
     }
+
+    @Override
+    public WalkInAppointment findAppointmentById(Integer nextAppointmentId) {
+        User doctor = new User();
+        doctor.setRoles(Arrays.asList(UserRole.DOCTOR));
+
+        WalkInAppointment walkInAppointment = new WalkInAppointment();
+        walkInAppointment.setAppointedDoctor(doctor);
+        walkInAppointment.setPatientFirstName("Patient First Name");
+        walkInAppointment.setPatientLastName("Patient Last Name");
+        walkInAppointment.setWalkInAppointmentId(2);
+        walkInAppointment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE).replace("T", " "));
+        return walkInAppointment;
+    }
 }

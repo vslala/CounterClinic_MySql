@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.user;
+package com.codesvenue.counterclinic.qrcode;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;

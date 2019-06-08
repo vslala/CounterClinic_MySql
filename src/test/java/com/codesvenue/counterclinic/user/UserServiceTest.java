@@ -2,12 +2,15 @@ package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicForm;
+import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointmentInfoForm;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -24,8 +27,10 @@ public class UserServiceTest {
 
     @Before
     public void setup(){
+        Mockito mock = new Mockito();
         UserRepository userRepository = new FakeUserRepository();
-        userService = new UserServiceImpl(userRepository);
+        SimpMessagingTemplate simpMessagingTemplate =  mock.mock(SimpMessagingTemplate.class);
+        userService = new UserServiceImpl(userRepository, simpMessagingTemplate);
     }
 
     @Test
@@ -81,5 +86,17 @@ public class UserServiceTest {
                 break;
         }
         Assert.assertTrue(file.listFiles().length>0);
+    }
+
+    @Test
+    public void doctorCallsNextPatient() {
+        User doctor = new User();
+        doctor.setRoles(Arrays.asList(UserRole.DOCTOR));
+        doctor.setClinicRoom(ClinicRoom.newInstance("X-RAY"));
+        Integer nextAppointmentId  = 2;
+
+        WalkInAppointment nextAppointment = userService.notifyReceptionToSendNextPatient(doctor, nextAppointmentId);
+
+        Assert.assertNotNull(nextAppointment);
     }
 }

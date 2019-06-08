@@ -1,7 +1,9 @@
-package com.codesvenue.counterclinic.user;
+package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.clinic.ClinicRoomNotAssignedToDoctorException;
+import com.codesvenue.counterclinic.user.User;
+import com.codesvenue.counterclinic.user.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.AppointedUserIsNotADoctor;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.junit.Assert;

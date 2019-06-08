@@ -5,6 +5,8 @@ import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -70,5 +72,13 @@ public class User {
 
     public void setClinicRoom(ClinicRoom clinicRoom) {
         this.assignedClinicRoom = clinicRoom;
+    }
+
+    public boolean askReceptionistToSendNextPatient(Integer nextAppointmentId, SimpMessagingTemplate simpMessagingTemplate) {
+        if (!Objects.isNull(roles) && roles.contains(UserRole.DOCTOR)) {
+            simpMessagingTemplate.convertAndSend("/doctoraction/nextpatient", nextAppointmentId);
+            return true;
+        }
+        throw new ActionNotAllowedException("Only doctors are allowed to perform this action");
     }
 }

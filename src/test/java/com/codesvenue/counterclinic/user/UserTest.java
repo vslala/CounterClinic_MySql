@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.Arrays;
 
@@ -95,4 +97,16 @@ public class UserTest {
         WalkInAppointment walkInAppointment = user.createWalkInAppointment(patientFirstName, patientLastName, appointedDoctor);
         Assert.assertNotNull(walkInAppointment);
     }
+
+    @Test
+    public void doctorCallsTheNextPatientInsideAndNotifiesReceptionist() {
+        user.setRoles(Arrays.asList(UserRole.DOCTOR));
+
+        Integer nextAppointmentId = 2;
+        Mockito mock = new Mockito();
+        SimpMessagingTemplate simpMessagingTemplate = mock.mock(SimpMessagingTemplate.class);
+
+        boolean isNotified = user.askReceptionistToSendNextPatient(nextAppointmentId, simpMessagingTemplate);
+        Assert.assertTrue(isNotified);
+    } 
 }

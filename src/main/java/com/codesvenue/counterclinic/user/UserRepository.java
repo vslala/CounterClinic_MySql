@@ -3,7 +3,9 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface UserRepository {
     Clinic createNewClinic(Clinic newClinic);
 
@@ -12,4 +14,6 @@ public interface UserRepository {
     User findDoctorById(Integer doctorId);
 
     QRCode createNewQRCode(QRCode qrCode);
+
+    WalkInAppointment findAppointmentById(Integer nextAppointmentId);
 }
