@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -63,5 +64,16 @@ public class WalkInAppointment {
 
     private boolean isRoomAssignedToDoctor(User appointedDoctor) {
         return Objects.isNull(appointedDoctor.getAssignedClinicRoom());
+    }
+
+    public static int findPatientsBeforeGivenAppointmentId(Integer appointmentId, List<WalkInAppointment> walkInAppointmentList) {
+        int patientsBeforeThisAppointmentId = 0;
+        for (WalkInAppointment walkInAppointment: walkInAppointmentList) {
+            if (walkInAppointment.getWalkInAppointmentId().equals(appointmentId)) {
+                break;
+            }
+            patientsBeforeThisAppointmentId++;
+        }
+        return patientsBeforeThisAppointmentId;
     }
 }

@@ -29,6 +29,7 @@ public class TestData {
             walkInAppointment.setPatientLastName(UUID.randomUUID().toString());
             walkInAppointment.setCreatedAt(now(diff));
             walkInAppointment.setAppointedDoctor(User.newInstance().roles(UserRole.DOCTOR).userId(1));
+//            System.out.println(walkInAppointment);
             walkInAppointments.add(walkInAppointment);
         }
         return walkInAppointments;
@@ -53,7 +54,7 @@ public class TestData {
     public static AppointmentStatus secondPersonGoesInsideTheDoctorCabin() {
         AppointmentStatus appointmentStatus2 = new AppointmentStatus();
         appointmentStatus2.setDoctorId(1);
-        appointmentStatus2.setCurrentAppointmentId(1);
+        appointmentStatus2.setCurrentAppointmentId(2);
         appointmentStatus2.setAvgWaitingTime(15);
         appointmentStatus2.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 15)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
         appointmentStatus2.setAppointmentStatusId(1);
