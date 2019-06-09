@@ -58,4 +58,5 @@ public class WalkInAppointmentTest {
         Assert.assertNotNull(newWalkInAppointment);
         Assert.assertNotNull(newWalkInAppointment.getCreatedAt());
     }
+
 }

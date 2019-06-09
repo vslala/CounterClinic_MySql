@@ -8,9 +8,7 @@ import lombok.Setter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class User {
 
@@ -22,6 +20,10 @@ public class User {
 
     @Getter
     private ClinicRoom assignedClinicRoom;
+
+    public static User newInstance() {
+        return new User();
+    }
 
     public List<UserRole> getRoles() {
         return Collections.unmodifiableList(roles);
@@ -80,5 +82,17 @@ public class User {
             return true;
         }
         throw new ActionNotAllowedException("Only doctors are allowed to perform this action");
+    }
+
+    public User roles(UserRole... userRole) {
+        if (Objects.isNull(roles))
+            roles = new ArrayList<>();
+        roles.addAll(Arrays.asList(userRole));
+        return this;
+    }
+
+    public User userId(Integer userId) {
+        this.userId = userId;
+        return this;
     }
 }
