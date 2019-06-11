@@ -1,23 +1,23 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.user.User;
 import lombok.extern.log4j.Log4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 @Log4j
 public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
-    private static final String MYSQL_DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     private final AppointmentRepository appointmentRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
-    public WalkInAppointmentServiceImpl(AppointmentRepository appointmentRepository) {
+    public WalkInAppointmentServiceImpl(AppointmentRepository appointmentRepository, SimpMessagingTemplate simpMessagingTemplate) {
         this.appointmentRepository = appointmentRepository;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
     @Override
@@ -28,12 +28,35 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
 
         if (appointmentStatusList.isEmpty()) {
             // doctor has not started taking patients
-            return AppointmentStatus.newInstanceForFirstTime(appointmentId, doctorId, patientsBeforeThisAppointmentId);
+            return AppointmentStatus.newInstanceForFirstTime(appointmentId, doctorId, patientsBeforeThisAppointmentId, LocalDateTime.now(ZoneOffset.UTC));
         }
 
-        int approxAvgWaitTime = AppointmentStatus.calculateAvgWaitingTime(inquiryTime, appointmentStatusList, patientsBeforeThisAppointmentId);
+        AppointmentStatus lastAppointmentStatus = appointmentStatusList.get(appointmentStatusList.size()-1);
+        int approxAvgWaitTime = lastAppointmentStatus.calculateAvgWaitingTime(inquiryTime, patientsBeforeThisAppointmentId);
 
-        return AppointmentStatus.newInstance(appointmentId, doctorId, inquiryTime, approxAvgWaitTime);
+        return AppointmentStatus.newInstanceWithApproxAvgWaitTime(appointmentId, approxAvgWaitTime, lastAppointmentStatus);
+    }
+
+    @Override
+    public AppointmentStatus callNextPatient(User user) {
+        List<WalkInAppointment> walkInAppointmentList = appointmentRepository.fetchDoctorAppointmentsForToday(user.getUserId());
+        List<AppointmentStatus> appointmentStatusList = appointmentRepository.fetchAppointmentStatusList(user.getUserId());
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        AppointmentStatus newAppointmentStatus = null;
+        if (appointmentStatusList.isEmpty()) {
+            WalkInAppointment firstAppointment = walkInAppointmentList.get(0);
+            newAppointmentStatus = AppointmentStatus.newInstanceForFirstTime(firstAppointment.getWalkInAppointmentId(),
+                    user.getUserId(), WalkInAppointment.findPatientsBeforeGivenAppointmentId(firstAppointment.getWalkInAppointmentId(),
+                            walkInAppointmentList), now);
+        } else {
+            AppointmentStatus currentAppointmentStatus = appointmentStatusList.get(appointmentStatusList.size()-1);
+            newAppointmentStatus = currentAppointmentStatus.generateAppointmentStatus(walkInAppointmentList, now);
+        }
+
+        AppointmentStatus appointmentStatus = appointmentRepository.saveAppointmentStatus(newAppointmentStatus);
+
+        user.askReceptionistToSendNextPatient(newAppointmentStatus.getCurrentAppointmentId(), simpMessagingTemplate);
+        return appointmentStatus;
     }
 
 }

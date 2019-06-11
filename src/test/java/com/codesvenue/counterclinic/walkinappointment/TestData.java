@@ -18,6 +18,30 @@ public class TestData {
     public static final String MYSQL_DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static List<AppointmentStatus> appointmentStatusList = new ArrayList<>();
 
+    public static AppointmentStatus store(AppointmentStatus appointmentStatus) {
+
+        if (appointmentStatusList.isEmpty()) {
+            appointmentStatus.setAppointmentStatusId(1);
+            appointmentStatus.setPatientsInVisitedQueue(appointmentStatus.getPatientsInVisitedQueue()+1);
+            appointmentStatusList.add(appointmentStatus);
+            return appointmentStatus;
+        }
+        AppointmentStatus lastAppointmentStatus = appointmentStatusList.get(appointmentStatusList.size()-1);
+        appointmentStatus.setPatientsInVisitedQueue(lastAppointmentStatus.getPatientsInVisitedQueue()+1);
+        appointmentStatusList.add(appointmentStatus);
+        return appointmentStatus;
+    }
+
+    public static AppointmentStatus remove(AppointmentStatus appointmentStatus) {
+        int index = 0;
+        for (AppointmentStatus status : appointmentStatusList) {
+            if (status.getCurrentAppointmentId().equals(appointmentStatus.getCurrentAppointmentId()))
+                break;
+            index ++;
+        }
+        return appointmentStatusList.remove(index);
+    }
+
     public static List<WalkInAppointment> buildWalkInAppointments(final int count, final int timeDifference) {
         int diff = 0;
         List<WalkInAppointment> walkInAppointments = new LinkedList<>();
@@ -47,7 +71,6 @@ public class TestData {
         appointmentStatus1.setCurrentAppointmentId(1);
         appointmentStatus1.setAvgWaitingTime(15);
         appointmentStatus1.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 00)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
-        appointmentStatus1.setAppointmentStatusId(1);
         return appointmentStatus1;
     }
 
@@ -57,7 +80,6 @@ public class TestData {
         appointmentStatus2.setCurrentAppointmentId(2);
         appointmentStatus2.setAvgWaitingTime(15);
         appointmentStatus2.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 15)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
-        appointmentStatus2.setAppointmentStatusId(1);
         return appointmentStatus2;
     }
 }

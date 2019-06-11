@@ -24,7 +24,7 @@ public class FakeAppointmentRepository implements AppointmentRepository {
     @Override
     public AppointmentStatus saveAppointmentStatus(AppointmentStatus appointmentStatus) {
         appointmentStatus.setAppointmentStatusId(TestData.appointmentStatusList.size()+1);
-        TestData.appointmentStatusList.add(appointmentStatus);
+        TestData.store(appointmentStatus);
         return appointmentStatus;
     }
 }

@@ -21,6 +21,16 @@ public class AppointmentStatus {
     private Integer avgWaitingTime = 0;
     private String appointmentStartTime;
     private Integer doctorBreakTime = 0;
+    private Integer patientsInVisitedQueue = 0;
+
+    public static AppointmentStatus newInstanceWithApproxAvgWaitTime(final Integer appointmentId,
+                                                                     final int approxAvgWaitTime,
+                                                                     final AppointmentStatus lastAppointmentStatus) {
+        AppointmentStatus newAppointmentStatus = lastAppointmentStatus;
+        newAppointmentStatus.setCurrentAppointmentId(appointmentId);
+        newAppointmentStatus.setAvgWaitingTime(approxAvgWaitTime);
+        return newAppointmentStatus;
+    }
 
     public AppointmentStatus generateAppointmentStatus(List<WalkInAppointment> walkInAppointmentList, LocalDateTime creationTime) {
         // Fetch the last appointment status from the list
@@ -72,44 +82,41 @@ public class AppointmentStatus {
         return this;
     }
 
-    public static AppointmentStatus newInstance(Integer appointmentId, Integer doctorId, LocalDateTime inquiryTime, int approxAvgWaitTime) {
-        AppointmentStatus appointmentStatus = new AppointmentStatus();
-        appointmentStatus.setCurrentAppointmentId(appointmentId);
-        appointmentStatus.setAvgWaitingTime(approxAvgWaitTime);
-        appointmentStatus.setAppointmentStartTime(inquiryTime.plus(approxAvgWaitTime, ChronoUnit.MINUTES).format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
-        appointmentStatus.setDoctorId(doctorId);
-        return appointmentStatus;
-    }
-
-    public static AppointmentStatus newInstanceForFirstTime(Integer appointmentId, Integer doctorId, int patientsBeforeThisAppointmentId) {
+    public static AppointmentStatus newInstanceForFirstTime(Integer appointmentId, Integer doctorId, int patientsBeforeThisAppointmentId, LocalDateTime now) {
         AppointmentStatus appointmentStatus = new AppointmentStatus();
         appointmentStatus.setAvgWaitingTime(15 * patientsBeforeThisAppointmentId);
         appointmentStatus.setCurrentAppointmentId(appointmentId);
         appointmentStatus.setDoctorId(doctorId);
+        appointmentStatus.setAppointmentStartTime(now.format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
+        appointmentStatus.setPatientsInVisitedQueue(1);
         return appointmentStatus;
     }
 
-    public static int calculateAvgWaitingTime(LocalDateTime inquiryTime, List<AppointmentStatus> appointmentStatusList, int patientsBeforeThisAppointmentId) {
-        int patientsInVisitedQueue = appointmentStatusList.size();
-        AppointmentStatus appointmentStatus = appointmentStatusList.get(patientsInVisitedQueue - 1);
+    public int calculateAvgWaitingTime(LocalDateTime inquiryTime, int patientsBeforeThisAppointmentId) {
 
-        int minutesPassed = (int)LocalDateTime.parse(
-                appointmentStatus.getAppointmentStartTime(), DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN))
+        int patientsInVisitedQueue = this.getPatientsInVisitedQueue();
+
+        int minutesPassed = (int) getFormattedAppointmentStartTime()
                 .until(inquiryTime, ChronoUnit.MINUTES);
         int appointmentsRemainingBeforeThisAppointment = patientsBeforeThisAppointmentId - patientsInVisitedQueue;
-        int avgWaitingTimeTillCurrentAppointment = appointmentStatus.getAvgWaitingTime();
+        int avgWaitingTimeTillCurrentAppointment = this.getAvgWaitingTime();
         int newAvgWaitingTime = (avgWaitingTimeTillCurrentAppointment + minutesPassed) / 2;
         int approxAvgWaitTime = (newAvgWaitingTime * (appointmentsRemainingBeforeThisAppointment)) + minutesPassed
-                + appointmentStatus.getDoctorBreakTime();
+                + this.getDoctorBreakTime();
 
         System.out.println("Patients before this appointment: " + patientsBeforeThisAppointmentId);
         System.out.println("Minutes passed from current appointment start time to inquiry time: " + minutesPassed);
         System.out.println("Patients in the visited queue: " + patientsInVisitedQueue);
-        System.out.println("Patients remaining to be checked before this: " + appointmentsRemainingBeforeThisAppointment);
+        System.out.println("Patients remaining to be checked before this appointment: " + appointmentsRemainingBeforeThisAppointment);
         System.out.println("Avg waiting time till current appointment: " + avgWaitingTimeTillCurrentAppointment);
         System.out.println("New avg waiting time: " + newAvgWaitingTime);
         System.out.println("Approx. Avg. Waiting time for this appointment: " + approxAvgWaitTime);
-        System.out.println("Doctor Break Time: " + appointmentStatus.getDoctorBreakTime());
+        System.out.println("Doctor Break Time: " + this.getDoctorBreakTime());
         return approxAvgWaitTime;
+    }
+
+    private LocalDateTime getFormattedAppointmentStartTime() {
+        return LocalDateTime.parse(
+                this.getAppointmentStartTime(), DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN));
     }
 }
