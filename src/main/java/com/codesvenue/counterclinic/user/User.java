@@ -48,9 +48,6 @@ public class User {
     @Min(value = 5, message = "Password should be atleast 5 chars long")
     private String password;
 
-    @NotNull(message = "User roles cannot be empty")
-    private List<UserRole> userRoles;
-
     @NotNull(message = "Preferred Language cannot be empty")
     private PreferredLanguage preferredLanguage;
 
@@ -64,14 +61,21 @@ public class User {
         return new User();
     }
 
+    private User(User other) {
+        this.userId = other.userId;
+        this.firstName = other.firstName;
+        this.lastName = other.lastName;
+        this.email = other.email;
+        this.mobile = other.mobile;
+        this.username = other.username;
+        this.password = other.password;
+        this.preferredLanguage = other.preferredLanguage;
+        this.roles = other.roles;
+        this.assignedClinicRoom = other.assignedClinicRoom;
+    }
+
     public static User copyInstance(User user) {
-        return User.newInstance().firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail())
-                .mobile(user.getMobile())
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .preferredLanguage(user.getPreferredLanguage());
+        return new User(user);
     }
 
     public List<UserRole> getRoles() {
@@ -123,7 +127,7 @@ public class User {
         return this;
     }
 
-    private String hashPassword(String password) {
+    public static String hashPassword(String password) {
         MessageDigest md = null;
         try {
             byte[] salt = getRandomSalt();
@@ -136,7 +140,7 @@ public class User {
         return new String(md.digest(password.getBytes(StandardCharsets.UTF_8)));
     }
 
-    private byte[] getRandomSalt() {
+    private static byte[] getRandomSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);

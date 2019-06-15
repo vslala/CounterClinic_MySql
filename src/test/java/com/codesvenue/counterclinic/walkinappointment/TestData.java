@@ -1,5 +1,6 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.user.PreferredLanguage;
 import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -51,6 +52,28 @@ public class TestData {
         appointmentStatus.setPatientsInVisitedQueue(lastAppointmentStatus.getPatientsInVisitedQueue()+1);
         appointmentStatusList.add(appointmentStatus);
         return appointmentStatus;
+    }
+
+    public static String getUniqStr(int length) {
+        String uniqStr = UUID.randomUUID().toString()
+                .replaceAll("-", "");
+        int maxLength = uniqStr.length();
+        if (length > maxLength)
+            length  = maxLength;
+        return uniqStr.substring(0, length);
+    }
+
+    public static User getNewUser(UserRole... roles) {
+        User user = User.newInstance()
+                .firstName(getUniqStr(5))
+                .lastName(getUniqStr(10))
+                .email(getUniqStr(6).concat("@gmail.com"))
+                .mobile(getUniqStr(10))
+                .username(getUniqStr(5))
+                .preferredLanguage(PreferredLanguage.ENGLISH)
+                .roles(roles);
+        user.setPassword("simplepass");
+        return user;
     }
 
     public static AppointmentStatus remove(AppointmentStatus appointmentStatus) {

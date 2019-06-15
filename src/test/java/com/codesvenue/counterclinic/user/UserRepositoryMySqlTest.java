@@ -53,4 +53,12 @@ public class UserRepositoryMySqlTest {
         Assert.assertNotNull(newUser.getUserId());
         Assert.assertFalse(newUser.getUserId() == 0);
     }
+
+    @Test
+    public void insertUserLoginDetailIntoTheDatabase() {
+        UserLogin userLogin = new UserLogin(1, "vslala", "simplepass");
+        UserLogin newUserLogin = userRepository.createNewUserLogin(userLogin);
+        Assert.assertNotNull(newUserLogin);
+        Assert.assertNotNull(newUserLogin.getId());
+    }
 }

@@ -87,8 +87,22 @@ public class UserRepositoryMySql implements UserRepository {
                 .addValue("email", user.getEmail())
                 .addValue("mobile", user.getMobile())
                 .addValue("username", user.getUsername())
-                .addValue("preferredLanguage", user.getPreferredLanguage());
+                .addValue("preferredLanguage", user.getPreferredLanguage().toString());
         jdbcTemplate.update(sql, params, keyHolder);
         return User.copyInstance(user).userId(keyHolder.getKey().intValue());
+    }
+
+    @Override
+    public UserLogin createNewUserLogin(UserLogin userLogin) {
+        final String sql = "INSERT INTO users_login (user_id, username, password, logged_in_at) " +
+                "values (:userId, :username, :password,  :loggedInAt)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userLogin.getUserId())
+                .addValue("username", userLogin.getUsername())
+                .addValue("password", userLogin.getPassword())
+                .addValue("loggedInAt", userLogin.getLoggedInAt());
+        jdbcTemplate.update(sql, params, keyHolder);
+        return UserLogin.copyInstance(userLogin).id(keyHolder.getKey().intValue());
     }
 }

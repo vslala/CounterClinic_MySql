@@ -80,4 +80,9 @@ public class FakeUserRepository implements UserRepository {
         user.setUserId(1);
         return user;
     }
+
+    @Override
+    public UserLogin createNewUserLogin(UserLogin userLogin) {
+        return UserLogin.copyInstance(userLogin).id(1);
+    }
 }

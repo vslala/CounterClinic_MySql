@@ -99,4 +99,9 @@ public class UserServiceTest {
 
         Assert.assertNotNull(nextAppointment);
     }
+
+    @Test
+    public void createNewDoctor() {
+
+    }
 }

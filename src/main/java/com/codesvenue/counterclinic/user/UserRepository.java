@@ -20,4 +20,6 @@ public interface UserRepository {
     Clinic createNewClinicRoom(Clinic newClinic);
 
     User createNewUser(User userRegistrationForm);
+
+    UserLogin createNewUserLogin(UserLogin userLogin);
 }
