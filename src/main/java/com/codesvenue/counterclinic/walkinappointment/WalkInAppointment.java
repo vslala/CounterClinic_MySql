@@ -4,6 +4,7 @@ import com.codesvenue.counterclinic.clinic.ClinicRoomNotAssignedToDoctorExceptio
 import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -12,13 +13,26 @@ import java.util.List;
 import java.util.Objects;
 
 @Data
+@NoArgsConstructor
 public class WalkInAppointment {
 
     private Integer walkInAppointmentId;
     private String patientFirstName;
     private String patientLastName;
-    private User appointedDoctor;
+    private Integer appointedDoctorId;
     private String createdAt;
+
+    private WalkInAppointment(WalkInAppointment other) {
+        this.walkInAppointmentId = other.walkInAppointmentId;
+        this.patientFirstName = other.patientFirstName;
+        this.patientLastName = other.patientLastName;
+        this.appointedDoctorId = other.appointedDoctorId;
+        this.createdAt = other.createdAt;
+    }
+
+    public static WalkInAppointment copyInstance(WalkInAppointment walkInAppointment) {
+        return new WalkInAppointment(walkInAppointment);
+    }
 
     public WalkInAppointment create(String patientFirstName, String patientLastName, User appointedDoctor) {
         if (! isDoctor(appointedDoctor))
@@ -29,28 +43,33 @@ public class WalkInAppointment {
         return WalkInAppointment.newInstance()
             .patientFirstName(patientFirstName)
             .patientLastName(patientLastName)
-            .appointedDoctor(appointedDoctor)
+            .appointedDoctor(appointedDoctor.getUserId())
             .createdAt(LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME)
                     .replace("T", " "));
     }
 
-    private WalkInAppointment createdAt(String dateTime) {
+    public WalkInAppointment createdAt(String dateTime) {
         this.createdAt = dateTime;
         return this;
     }
 
-    private WalkInAppointment appointedDoctor(User appointedDoctor) {
-        this.appointedDoctor = appointedDoctor;
+    public WalkInAppointment appointedDoctor(Integer appointedDoctorId) {
+        this.appointedDoctorId = appointedDoctorId;
         return this;
     }
 
-    private WalkInAppointment patientLastName(String patientLastName) {
+    public WalkInAppointment patientLastName(String patientLastName) {
         this.patientLastName = patientLastName;
         return this;
     }
 
-    private WalkInAppointment patientFirstName(String patientFirstName) {
+    public WalkInAppointment patientFirstName(String patientFirstName) {
         this.patientFirstName = patientFirstName;
+        return this;
+    }
+
+    public WalkInAppointment walkInAppointmentId(Integer id) {
+        this.walkInAppointmentId = id;
         return this;
     }
 

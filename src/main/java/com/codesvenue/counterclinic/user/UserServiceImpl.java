@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Log4j
@@ -55,10 +54,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAppointmentById(nextAppointmentId);
     }
 
+    @Override
+    public User addNewDoctor(User admin, User doctor) {
+        User newDoctor = admin.createNewDoctor(doctor);
+        return userRepository.createNewUser(newDoctor);
+    }
+
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {
         Map<String, Object> qrCodeData = new HashMap<>();
         qrCodeData.put("appointmentId", newWalkInAppointment.getWalkInAppointmentId());
-        qrCodeData.put("appointedDoctorId", newWalkInAppointment.getAppointedDoctor().getUserId());
+        qrCodeData.put("appointedDoctorId", newWalkInAppointment.getAppointedDoctorId());
         String qrCodeFilePath = String.format("%s/%s.png", qrCodeFolder, System.currentTimeMillis());
 
         QRCode qrCode = QRCodeBuilder.newInstance()

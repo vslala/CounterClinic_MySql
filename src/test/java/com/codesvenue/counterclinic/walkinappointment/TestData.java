@@ -10,12 +10,10 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class TestData {
 
@@ -96,7 +94,7 @@ public class TestData {
             walkInAppointment.setPatientFirstName(UUID.randomUUID().toString());
             walkInAppointment.setPatientLastName(UUID.randomUUID().toString());
             walkInAppointment.setCreatedAt(now(diff));
-            walkInAppointment.setAppointedDoctor(User.newInstance().roles(UserRole.DOCTOR).userId(1));
+            walkInAppointment.setAppointedDoctorId(1);
 //            System.out.println(walkInAppointment);
             walkInAppointments.add(walkInAppointment);
         }

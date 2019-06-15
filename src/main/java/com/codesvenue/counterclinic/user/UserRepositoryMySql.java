@@ -5,15 +5,16 @@ import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import lombok.extern.log4j.Log4j;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +42,26 @@ public class UserRepositoryMySql implements UserRepository {
 
     @Override
     public WalkInAppointment createNewWalkInAppointment(WalkInAppointment walkInAppointment) {
-        return null;
+        final String sql = "INSERT INTO walkin_appointments (patient_first_name, patient_last_name, appointed_doctor_id) " +
+                "VALUES (:patientFirstName, :patientLastName, :appointedDoctorId)";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("patientFirstName", walkInAppointment.getPatientFirstName())
+                .addValue("patientLastName", walkInAppointment.getPatientLastName())
+                .addValue("appointedDoctorId", walkInAppointment.getAppointedDoctorId());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+        return WalkInAppointment.copyInstance(walkInAppointment)
+                .walkInAppointmentId(keyHolder.getKey().intValue());
     }
 
     @Override
     public User findDoctorById(Integer doctorId) {
-        return null;
+        final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at,\n" +
+                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = 'user_role' AND t2.user_id = :userId) as user_role\n" +
+                "FROM users t1\n" +
+                "WHERE t1.user_id = :userId";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("userId", doctorId);
+        return jdbcTemplate.queryForObject(sql, params, User.UserRowMapper.newInstance());
     }
 
     @Override
@@ -56,7 +71,12 @@ public class UserRepositoryMySql implements UserRepository {
 
     @Override
     public WalkInAppointment findAppointmentById(Integer nextAppointmentId) {
-        return null;
+        final String sql = "SELECT t1.walkin_appointment_id, t1.patient_first_name, t1.patient_last_name, " +
+                "t1.appointed_doctor_id, t1.created_at FROM `walkin_appointments` t1 " +
+                "WHERE t1.walkin_appointment_id = :walkInAppointmentId";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("walkInAppointmentId", nextAppointmentId);
+        return jdbcTemplate.queryForObject(sql, params, WalkInAppointmentRowMapper.newInstance());
     }
 
     @Override
@@ -104,5 +124,21 @@ public class UserRepositoryMySql implements UserRepository {
                 .addValue("loggedInAt", userLogin.getLoggedInAt());
         jdbcTemplate.update(sql, params, keyHolder);
         return UserLogin.copyInstance(userLogin).id(keyHolder.getKey().intValue());
+    }
+
+    public static class WalkInAppointmentRowMapper implements RowMapper<WalkInAppointment> {
+        public static WalkInAppointmentRowMapper newInstance() {
+            return new WalkInAppointmentRowMapper();
+        }
+
+        @Override
+        public WalkInAppointment mapRow(ResultSet resultSet, int i) throws SQLException {
+            WalkInAppointment walkInAppointment = new WalkInAppointment();
+            walkInAppointment.setWalkInAppointmentId(resultSet.getInt("walkin_appointment_id"));
+            walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
+            walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
+            walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
+            return walkInAppointment;
+        }
     }
 }

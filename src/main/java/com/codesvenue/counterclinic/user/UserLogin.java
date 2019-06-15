@@ -1,7 +1,6 @@
 package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.configuration.DateTimeConstants;
-import jdk.jshell.Snippet;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

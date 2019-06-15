@@ -11,4 +11,6 @@ public interface UserService {
     WalkInAppointment createNewWalkInAppointment(User receptionist, WalkInAppointmentInfoForm walkInAppointmentInfoForm);
 
     WalkInAppointment notifyReceptionToSendNextPatient(User doctor, Integer nextAppointmentId);
+
+    User addNewDoctor(User admin, User doctor);
 }

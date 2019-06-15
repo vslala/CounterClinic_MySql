@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import javax.validation.constraints.Email;
@@ -17,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Data
@@ -207,5 +210,30 @@ public class User {
     public User userId(Integer userId) {
         this.userId = userId;
         return this;
+    }
+
+    public User createNewDoctor(User doctor) {
+        if (isAdmin() || isSuperAdmin())
+            return doctor;
+        throw new ActionNotAllowedException("Only admins or super admins can create new user.");
+    }
+
+    public static class UserRowMapper implements RowMapper<User> {
+
+        public static UserRowMapper newInstance() {
+            return new UserRowMapper();
+        }
+
+        @Override
+        public User mapRow(ResultSet resultSet, int i) throws SQLException {
+            return User.newInstance()
+                    .userId(resultSet.getInt("user_id"))
+                    .firstName(resultSet.getString("first_name"))
+                    .lastName(resultSet.getString("last_name"))
+                    .email(resultSet.getString("email"))
+                    .mobile(resultSet.getString("mobile"))
+                    .username(resultSet.getString("username"))
+                    .roles(UserRole.valueOf(resultSet.getString("user_role")));
+        }
     }
 }

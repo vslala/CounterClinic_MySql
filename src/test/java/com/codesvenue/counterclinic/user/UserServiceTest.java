@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicForm;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.walkinappointment.TestData;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointmentInfoForm;
 import org.apache.commons.io.FileUtils;
@@ -29,6 +30,7 @@ public class UserServiceTest {
     public void setup(){
         Mockito mock = new Mockito();
         UserRepository userRepository = new FakeUserRepository();
+        UserRepository origUserRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
         SimpMessagingTemplate simpMessagingTemplate =  mock.mock(SimpMessagingTemplate.class);
         userService = new UserServiceImpl(userRepository, simpMessagingTemplate);
     }
@@ -102,6 +104,10 @@ public class UserServiceTest {
 
     @Test
     public void createNewDoctor() {
-
+        User admin = TestData.getNewUser(UserRole.ADMIN);
+        User doctor = TestData.getNewUser(UserRole.DOCTOR);
+        User newDoctor = userService.addNewDoctor(admin, doctor);
+        Assert.assertNotNull(newDoctor);
+        Assert.assertNotNull(newDoctor.getUserId());
     }
 }

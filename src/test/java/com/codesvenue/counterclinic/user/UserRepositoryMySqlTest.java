@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.walkinappointment.TestData;
+import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,5 +61,30 @@ public class UserRepositoryMySqlTest {
         UserLogin newUserLogin = userRepository.createNewUserLogin(userLogin);
         Assert.assertNotNull(newUserLogin);
         Assert.assertNotNull(newUserLogin.getId());
+    }
+
+    @Test
+    public void shouldFindDoctorById() {
+        User doctor = userRepository.findDoctorById(1);
+        Assert.assertEquals(doctor.getUsername(), "pvrano");
+    }
+
+    @Test
+    public void itShouldCreateNewWalkInAppointment() {
+        WalkInAppointment walkInAppointment = new WalkInAppointment();
+        walkInAppointment.setAppointedDoctorId(2);
+        walkInAppointment.setPatientFirstName("Test Patient");
+        walkInAppointment.setPatientLastName("Test Patient");
+        WalkInAppointment newAppointment = userRepository.createNewWalkInAppointment(walkInAppointment);
+
+        Assert.assertNotNull(newAppointment);
+        Assert.assertNotNull(newAppointment.getWalkInAppointmentId());
+    }
+
+    @Test
+    public void shouldFindAppointmentWithId() {
+        WalkInAppointment walkInAppointment = userRepository.findAppointmentById(1);
+        Assert.assertNotNull(walkInAppointment);
+        Assert.assertEquals(1, (int) walkInAppointment.getWalkInAppointmentId());
     }
 }

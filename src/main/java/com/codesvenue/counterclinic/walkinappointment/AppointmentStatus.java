@@ -53,7 +53,7 @@ public class AppointmentStatus {
 
     private AppointmentStatus buildAppointmentStatus(WalkInAppointment nextWalkInAppointment, LocalDateTime now, int newAvgWaitTime) {
         AppointmentStatus appointmentStatus = new AppointmentStatus();
-        appointmentStatus.setDoctorId(nextWalkInAppointment.getAppointedDoctor().getUserId());
+        appointmentStatus.setDoctorId(nextWalkInAppointment.getAppointedDoctorId());
         appointmentStatus.setAppointmentStartTime(now.format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
         appointmentStatus.setAvgWaitingTime(newAvgWaitTime);
         appointmentStatus.setCurrentAppointmentId(nextWalkInAppointment.getWalkInAppointmentId());
