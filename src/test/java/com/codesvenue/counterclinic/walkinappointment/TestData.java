@@ -2,6 +2,9 @@ package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +17,24 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class TestData {
+
+    private static final String driverClassName = "com.mysql.cj.jdbc.Driver";
+    private static final String url = "jdbc:mysql://localhost/counterclinicdb?serverTimezone=UTC";
+    private static final String dbUsername = "root";
+    private static final String dbPassword = "";
+
+    public static DriverManagerDataSource getDataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(dbUsername);
+        dataSource.setPassword(dbPassword);
+        return dataSource;
+    }
+
+    public static JdbcTemplate getJdbcTemplate() {
+        return new JdbcTemplate(getDataSource());
+    }
 
     public static final String MYSQL_DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static List<AppointmentStatus> appointmentStatusList = new ArrayList<>();
@@ -81,5 +102,9 @@ public class TestData {
         appointmentStatus2.setAvgWaitingTime(15);
         appointmentStatus2.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 15)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
         return appointmentStatus2;
+    }
+
+    public static NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
+        return new NamedParameterJdbcTemplate(getDataSource());
     }
 }

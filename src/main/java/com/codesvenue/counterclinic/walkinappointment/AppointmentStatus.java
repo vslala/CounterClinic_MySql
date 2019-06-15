@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
@@ -20,7 +19,7 @@ public class AppointmentStatus {
     private Integer doctorId;
     private Integer avgWaitingTime = 0;
     private String appointmentStartTime;
-    private Integer doctorBreakTime = 0;
+    private Integer doctorBreakDuration = 0;
     private Integer patientsInVisitedQueue = 0;
 
     public static AppointmentStatus newInstanceWithApproxAvgWaitTime(final Integer appointmentId,
@@ -102,7 +101,7 @@ public class AppointmentStatus {
         int avgWaitingTimeTillCurrentAppointment = this.getAvgWaitingTime();
         int newAvgWaitingTime = (avgWaitingTimeTillCurrentAppointment + minutesPassed) / 2;
         int approxAvgWaitTime = (newAvgWaitingTime * (appointmentsRemainingBeforeThisAppointment)) + minutesPassed
-                + this.getDoctorBreakTime();
+                + this.getDoctorBreakDuration();
 
         System.out.println("Patients before this appointment: " + patientsBeforeThisAppointmentId);
         System.out.println("Minutes passed from current appointment start time to inquiry time: " + minutesPassed);
@@ -111,7 +110,7 @@ public class AppointmentStatus {
         System.out.println("Avg waiting time till current appointment: " + avgWaitingTimeTillCurrentAppointment);
         System.out.println("New avg waiting time: " + newAvgWaitingTime);
         System.out.println("Approx. Avg. Waiting time for this appointment: " + approxAvgWaitTime);
-        System.out.println("Doctor Break Time: " + this.getDoctorBreakTime());
+        System.out.println("Doctor Break Time: " + this.getDoctorBreakDuration());
         return approxAvgWaitTime;
     }
 

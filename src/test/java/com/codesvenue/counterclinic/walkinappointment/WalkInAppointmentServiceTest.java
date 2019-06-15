@@ -61,7 +61,7 @@ public class WalkInAppointmentServiceTest {
         TestData.store(appointmentStatus1);
         TestData.store(appointmentStatus2);
         // have to update the doctor break time in the last appointment of the queue
-        TestData.appointmentStatusList.get(TestData.appointmentStatusList.size()-1).setDoctorBreakTime(10);
+        TestData.appointmentStatusList.get(TestData.appointmentStatusList.size()-1).setDoctorBreakDuration(10);
 
         LocalDateTime inquiryTime = LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 30));
         AppointmentStatus appointmentStatus = walkInAppointmentService.getAppointmentStatus(appointmentId, doctorId, inquiryTime);

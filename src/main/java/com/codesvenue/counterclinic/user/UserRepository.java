@@ -16,4 +16,6 @@ public interface UserRepository {
     QRCode createNewQRCode(QRCode qrCode);
 
     WalkInAppointment findAppointmentById(Integer nextAppointmentId);
+
+    Clinic createNewClinicRoom(Clinic newClinic);
 }

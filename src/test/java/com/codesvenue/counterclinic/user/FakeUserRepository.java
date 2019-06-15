@@ -62,4 +62,9 @@ public class FakeUserRepository implements UserRepository {
         walkInAppointment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE).replace("T", " "));
         return walkInAppointment;
     }
+
+    @Override
+    public Clinic createNewClinicRoom(Clinic newClinic) {
+        return null;
+    }
 }

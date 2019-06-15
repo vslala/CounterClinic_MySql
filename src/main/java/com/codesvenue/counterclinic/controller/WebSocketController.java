@@ -8,6 +8,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 @Controller
@@ -18,6 +20,11 @@ public class WebSocketController {
     @Autowired
     public WebSocketController(SimpMessagingTemplate simpMessagingTemplate) {
         this.simpMessagingTemplate = simpMessagingTemplate;
+    }
+
+    @GetMapping("/message")
+    public void sendMessage(@RequestParam("msg") String msg) {
+        simpMessagingTemplate.convertAndSend("/topic/doctor-action", msg);
     }
 
     @MessageMapping("/next-patient")

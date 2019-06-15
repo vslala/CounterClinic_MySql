@@ -18,8 +18,18 @@ public class Clinic {
         this.clinicName = clinicName;
     }
 
+    private Clinic(Clinic clinic) {
+        this.clinicId = clinic.getClinicId();
+        this.clinicName = clinic.getClinicName();
+        this.rooms = clinic.getRooms();
+    }
+
     public static Clinic newInstance(String clinicName) {
         return new Clinic(clinicName);
+    }
+
+    public static Clinic copyInstance(Clinic clinic) {
+        return new Clinic(clinic);
     }
 
     public Clinic addNewRoom(ClinicRoom clinicRoom) {
