@@ -10,8 +10,8 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,10 +54,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAppointmentById(nextAppointmentId);
     }
 
+    @Transactional
     @Override
     public User addNewDoctor(User admin, User doctor) {
         User newDoctor = admin.createNewDoctor(doctor);
-        return userRepository.createNewUser(newDoctor);
+        User newUser = userRepository.createNewUser(newDoctor);
+        userRepository.createNewUserLogin(UserLogin.newInstance(newUser));
+        return newUser;
     }
 
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {

@@ -42,6 +42,14 @@ public class UserLogin {
         return new UserLogin();
     }
 
+    public static UserLogin newInstance(User newUser) {
+        return UserLogin.newInstance()
+                .userId(newUser.getUserId())
+                .username(newUser.getUsername())
+                .password(newUser.getPassword())
+                .loggedInAt(LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
+    }
+
     public UserLogin id(Integer id) {
         this.id = id;
         return  this;
