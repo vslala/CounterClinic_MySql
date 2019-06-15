@@ -37,4 +37,20 @@ public class UserRepositoryMySqlTest {
         Assert.assertTrue(clinic.getClinicId() > 0);
         Assert.assertTrue(clinic.getRooms().size() == 2);
     }
+
+    @Test
+    public void insertNewUserToDatabase(){
+        User user = User.newInstance()
+                .firstName("Varun").lastName("Shrivastava")
+                .email("varunshrivastava007@gmail.com")
+                .mobile("9960543885")
+                .username("vslala")
+                .preferredLanguage(PreferredLanguage.ENGLISH);
+        user.setPassword("simplepass"); // set password to hash it
+
+        User newUser = userRepository.createNewUser(user);
+        Assert.assertNotNull(newUser);
+        Assert.assertNotNull(newUser.getUserId());
+        Assert.assertFalse(newUser.getUserId() == 0);
+    }
 }

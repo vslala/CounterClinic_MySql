@@ -74,4 +74,21 @@ public class UserRepositoryMySql implements UserRepository {
         newClinic.setRooms(clinicRooms);
         return newClinic;
     }
+
+    @Override
+    public User createNewUser(User user) {
+        final String sql = "INSERT INTO users (first_name, last_name, email, mobile, username, preferred_language) " +
+                "values (:firstName, :lastName, :email, :mobile, :username, :preferredLanguage)";
+        System.out.println("Preferred Language: "  + user.getPreferredLanguage());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("email", user.getEmail())
+                .addValue("mobile", user.getMobile())
+                .addValue("username", user.getUsername())
+                .addValue("preferredLanguage", user.getPreferredLanguage());
+        jdbcTemplate.update(sql, params, keyHolder);
+        return User.copyInstance(user).userId(keyHolder.getKey().intValue());
+    }
 }

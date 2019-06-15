@@ -108,5 +108,5 @@ public class UserTest {
 
         boolean isNotified = user.askReceptionistToSendNextPatient(nextAppointmentId, simpMessagingTemplate);
         Assert.assertTrue(isNotified);
-    } 
+    }
 }

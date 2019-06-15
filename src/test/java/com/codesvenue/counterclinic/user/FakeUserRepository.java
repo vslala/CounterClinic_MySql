@@ -67,4 +67,17 @@ public class FakeUserRepository implements UserRepository {
     public Clinic createNewClinicRoom(Clinic newClinic) {
         return null;
     }
+
+    @Override
+    public User createNewUser(User userRegistrationForm) {
+        User user = User.newInstance()
+                .firstName("Varun").lastName("Shrivastava")
+                .email("varunshrivastava007@gmail.com")
+                .mobile("9960543885")
+                .username("vslala")
+                .preferredLanguage(PreferredLanguage.ENGLISH);
+        user.setPassword("simplepass"); // set password to hash it
+        user.setUserId(1);
+        return user;
+    }
 }

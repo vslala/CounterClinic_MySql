@@ -18,4 +18,6 @@ public interface UserRepository {
     WalkInAppointment findAppointmentById(Integer nextAppointmentId);
 
     Clinic createNewClinicRoom(Clinic newClinic);
+
+    User createNewUser(User userRegistrationForm);
 }
