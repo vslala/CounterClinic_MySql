@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ClinicRoom {
 
+    private Integer clinicRoomId;
     private String name;
 
     public ClinicRoom(String name) {

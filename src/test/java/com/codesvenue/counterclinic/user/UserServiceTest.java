@@ -32,7 +32,9 @@ public class UserServiceTest {
         UserRepository userRepository = new FakeUserRepository();
         UserRepository origUserRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
         SimpMessagingTemplate simpMessagingTemplate =  mock.mock(SimpMessagingTemplate.class);
-        userService = new UserServiceImpl(userRepository, simpMessagingTemplate);
+        userService = new UserServiceImpl(origUserRepository, simpMessagingTemplate);
+        ReflectionTestUtils.setField(userService, "qrCodeFolder", "src/test/resources/static/qrcode");
+        ReflectionTestUtils.setField(userService, "qrCodeUrlPath", "qrcode");
     }
 
     @Test
@@ -44,6 +46,19 @@ public class UserServiceTest {
         clinicForm.setClinicName("TestClinic");
         Clinic clinic = userService.createNewClinic(admin, clinicForm);
         Assert.assertNotNull(clinic);
+    }
+
+    @Test
+    public void itShouldAssignClinicRoomToDoctor() {
+        User receptionist = TestData.getNewUser(UserRole.RECEPTIONIST);
+        Integer assignDoctorId = 1;
+
+        Integer clinicRoomId = 3;
+
+        User doctor = userService.assignDoctorClinic(receptionist, clinicRoomId, assignDoctorId);
+
+        Assert.assertNotNull(doctor);
+        Assert.assertNotNull(doctor.getClinicRoomId());
     }
 
     @Test
@@ -64,8 +79,7 @@ public class UserServiceTest {
     @Test
     public void itShouldCreateNewAppointmentWithQRCodeInOneTransaction() throws IOException {
         // test preparation
-        ReflectionTestUtils.setField(userService, "qrCodeFolder", "src/test/resources/qrcode");
-        File file = Paths.get("src/test/resources/qrcode").toFile();
+        File file = Paths.get("src/test/resources/static/qrcode").toFile();
         FileUtils.deleteDirectory(file);
 
         // Given

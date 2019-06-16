@@ -1,5 +1,7 @@
 package com.codesvenue.counterclinic.qrcode;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,22 +9,43 @@ import java.util.Map;
 
 @NoArgsConstructor
 @Data
-public class QRCode implements Cloneable {
+public class QRCode {
 
     private Integer qrCodeId;
-    private Integer attachmentId;
+    private Integer appointmentId;
     private Integer qrCodeHeight;
     private Integer qrCodeWidth;
     private String qrCodeName;
     private String qrCodeFilePath;
+    private String qrCodeUrlPath;
     private Map<String,  Object> qrCodeData;
+
+    private QRCode(QRCode other) {
+        this.qrCodeId = other.qrCodeId;
+        this.appointmentId = other.appointmentId;
+        this.qrCodeHeight = other.qrCodeHeight;
+        this.qrCodeWidth = other.qrCodeWidth;
+        this.qrCodeName = other.qrCodeName;
+        this.qrCodeFilePath = other.qrCodeFilePath;
+        this.qrCodeUrlPath = other.qrCodeUrlPath;
+        this.qrCodeData = other.qrCodeData;
+    }
 
     public static QRCode newInstance() {
         return new QRCode();
     }
 
-    public QRCode attachmentId(Integer attachmentId) {
-        this.attachmentId = attachmentId;
+    public static QRCode copyInstance(QRCode qrCode) {
+        return new QRCode(qrCode);
+    }
+
+    public QRCode qrCodeId(Integer qrCodeId) {
+        this.qrCodeId = qrCodeId;
+        return this;
+    }
+
+    public QRCode appointmentId(Integer attachmentId) {
+        this.appointmentId = attachmentId;
         return this;
     }
 
@@ -46,13 +69,17 @@ public class QRCode implements Cloneable {
         return this;
     }
 
+    public QRCode qrCodeUrlPath(String url) {
+        this.qrCodeUrlPath = url;
+        return this;
+    }
+
     public QRCode qrCodeData(Map<String, Object> qrCodeData) {
         this.qrCodeData = qrCodeData;
         return this;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public String getQrCodeDataInJson() throws JsonProcessingException {
+        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(qrCodeData);
     }
 }

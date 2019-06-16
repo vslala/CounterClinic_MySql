@@ -82,7 +82,7 @@ public class WalkInAppointment {
     }
 
     private boolean isRoomAssignedToDoctor(User appointedDoctor) {
-        return Objects.isNull(appointedDoctor.getAssignedClinicRoom());
+        return Objects.isNull(appointedDoctor.getClinicRoomId());
     }
 
     public static int findPatientsBeforeGivenAppointmentId(Integer appointmentId, List<WalkInAppointment> walkInAppointmentList) {

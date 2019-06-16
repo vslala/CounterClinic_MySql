@@ -21,13 +21,16 @@ public class QRCodeBuilder {
     private int height;
     private String format;
     private String filePath;
+    private String qrCodeUrlPath;
 
     private QRCodeBuilder() {
         // setting default
         width = 300;
         height = 300;
         format = "png";
-        filePath = "src/main/resources/qrcode/" + System.currentTimeMillis() + "." + format;
+        long now = System.currentTimeMillis();
+        filePath = "src/main/resources/qrcode/" + now + "." + format;
+        qrCodeUrlPath = "qrcode/" + now + "." + format;
     }
 
     public static QRCodeBuilder newInstance() {
@@ -66,10 +69,11 @@ public class QRCodeBuilder {
         generateDirectoryStructure();
         generateQRCode(qrCodeInput);
         return QRCode.newInstance()
-                .attachmentId(attachmentId)
+                .appointmentId(attachmentId)
                 .qrCodeHeight(height)
                 .qrCodeWidth(width)
                 .filePath(filePath)
+                .qrCodeUrlPath(qrCodeUrlPath)
                 .qrCodeName(FilenameUtils.getName(filePath))
                 .qrCodeData(qrCodeInput);
     }
@@ -95,4 +99,8 @@ public class QRCodeBuilder {
     }
 
 
+    public QRCodeBuilder url(String qrCodeUrlPath) {
+        this.qrCodeUrlPath = qrCodeUrlPath;
+        return this;
+    }
 }

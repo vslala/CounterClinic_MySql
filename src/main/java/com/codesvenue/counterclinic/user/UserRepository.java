@@ -1,6 +1,7 @@
 package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.clinic.Clinic;
+import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.springframework.stereotype.Service;
@@ -22,4 +23,8 @@ public interface UserRepository {
     User createNewUser(User userRegistrationForm);
 
     UserLogin createNewUserLogin(UserLogin userLogin);
+
+    ClinicRoom findClinicRoomById(Integer clinicRoomId);
+
+    UserMeta updateUserMeta(Integer userId, String metaKey, String metaValue);
 }

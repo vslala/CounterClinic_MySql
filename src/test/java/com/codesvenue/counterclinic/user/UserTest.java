@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.walkinappointment.TestData;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,16 +65,18 @@ public class UserTest {
     public void receptionistUserCanAssignRoomsToDoctor() {
         user.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
         ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
-        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
-        Assert.assertTrue(clinicAssigned);
+        User doctor = TestData.getNewUser(UserRole.DOCTOR);
+        User assignedDoctor = user.assignClinicRoom(clinicRoom, doctor);
+        Assert.assertNotNull(assignedDoctor);
     }
 
     @Test
     public void superAdminUserCanAssignRoomsToDoctor() {
         user.setRoles(Arrays.asList(UserRole.SUPERADMIN));
         ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
-        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
-        Assert.assertTrue(clinicAssigned);
+        User doctor = TestData.getNewUser(UserRole.DOCTOR);
+        User assignedDoctor = user.assignClinicRoom(clinicRoom, doctor);
+        Assert.assertNotNull(assignedDoctor);
     }
 
     @Test
@@ -81,8 +84,9 @@ public class UserTest {
         expectedException.expect(ActionNotAllowedException.class);
         user.setRoles(Arrays.asList(UserRole.DOCTOR));
         ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
-        boolean clinicAssigned = user.assignClinicRoom(clinicRoom);
-        Assert.assertTrue(clinicAssigned);
+        User doctor = TestData.getNewUser(UserRole.DOCTOR);
+        User assignedDoctor = user.assignClinicRoom(clinicRoom, doctor);
+        Assert.assertNotNull(assignedDoctor);
     }
 
     @Test

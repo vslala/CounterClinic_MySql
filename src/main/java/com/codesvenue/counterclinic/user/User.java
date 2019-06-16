@@ -58,7 +58,7 @@ public class User {
     private List<UserRole> roles;
 
     @Getter
-    private ClinicRoom assignedClinicRoom;
+    private Integer clinicRoomId;
 
     public static User newInstance() {
         return new User();
@@ -74,7 +74,7 @@ public class User {
         this.password = other.password;
         this.preferredLanguage = other.preferredLanguage;
         this.roles = other.roles;
-        this.assignedClinicRoom = other.assignedClinicRoom;
+        this.clinicRoomId = other.clinicRoomId;
     }
 
     public static User copyInstance(User user) {
@@ -165,10 +165,15 @@ public class User {
         throw new ActionNotAllowedException("User do not have privileges to add new room to clinic.");
     }
 
-    public boolean assignClinicRoom(ClinicRoom clinicRoom) {
+    public User assignClinicRoomId(Integer clinicRoomId) {
+        this.clinicRoomId = clinicRoomId;
+        return this;
+    }
+
+    public User assignClinicRoom(ClinicRoom clinicRoom, User doctor) {
         if (isSuperAdminOrReceptionist()) {
-            this.assignedClinicRoom = clinicRoom;
-            return !Objects.isNull(this.assignedClinicRoom);
+            doctor.clinicRoomId = clinicRoom.getClinicRoomId();
+            return User.copyInstance(doctor);
         }
         throw new ActionNotAllowedException("User do not have privileges to assign clinic rooms to doctor.");
     }
@@ -189,7 +194,7 @@ public class User {
     }
 
     public void setClinicRoom(ClinicRoom clinicRoom) {
-        this.assignedClinicRoom = clinicRoom;
+        this.clinicRoomId = clinicRoom.getClinicRoomId();
     }
 
     public boolean askReceptionistToSendNextPatient(Integer nextAppointmentId, SimpMessagingTemplate simpMessagingTemplate) {
@@ -233,7 +238,8 @@ public class User {
                     .email(resultSet.getString("email"))
                     .mobile(resultSet.getString("mobile"))
                     .username(resultSet.getString("username"))
-                    .roles(UserRole.valueOf(resultSet.getString("user_role")));
+                    .roles(UserRole.valueOf(resultSet.getString("user_role")))
+                    .assignClinicRoomId(resultSet.getInt("assigned_clinic_room"));
         }
     }
 }

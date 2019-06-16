@@ -85,4 +85,14 @@ public class FakeUserRepository implements UserRepository {
     public UserLogin createNewUserLogin(UserLogin userLogin) {
         return UserLogin.copyInstance(userLogin).id(1);
     }
+
+    @Override
+    public ClinicRoom findClinicRoomById(Integer clinicRoomId) {
+        return null;
+    }
+
+    @Override
+    public UserMeta updateUserMeta(Integer userId, String metaKey, String metaValue) {
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 @Log4j
@@ -57,16 +59,39 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public User findDoctorById(Integer doctorId) {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at,\n" +
-                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = 'user_role' AND t2.user_id = :userId) as user_role\n" +
+                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :userRole AND t2.user_id = :userId) as user_role,\n" +
+                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :assignedClinicRoom AND t2.user_id = :userId) as assigned_clinic_room\n" +
                 "FROM users t1\n" +
                 "WHERE t1.user_id = :userId";
-        SqlParameterSource params = new MapSqlParameterSource().addValue("userId", doctorId);
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userRole", UserConstants.USER_ROLE)
+                .addValue("userId", doctorId)
+                .addValue("assignedClinicRoom", UserConstants.ASSIGNED_CLINIC_ROOM);
         return jdbcTemplate.queryForObject(sql, params, User.UserRowMapper.newInstance());
     }
 
     @Override
     public QRCode createNewQRCode(QRCode qrCode) {
-        return null;
+        final String sql = "INSERT INTO qrcode_attachments (appointment_id, height, width, image_name, image_file_path, image_url_path, qrcode_data) " +
+                "VALUES (:appointmentId, :height, :width, :imageName, :imageFilePath, :imageUrlPath, :qrCodeData)";
+        SqlParameterSource params = null;
+        try {
+            params = new MapSqlParameterSource()
+                    .addValue("appointmentId", qrCode.getAppointmentId())
+                    .addValue("height", qrCode.getQrCodeHeight())
+                    .addValue("width", qrCode.getQrCodeWidth())
+                    .addValue("imageName", qrCode.getQrCodeName())
+                    .addValue("imageFilePath", qrCode.getQrCodeFilePath())
+                    .addValue("imageUrlPath", qrCode.getQrCodeUrlPath())
+                    .addValue("qrCodeData", qrCode.getQrCodeDataInJson());
+        } catch (JsonProcessingException e) {
+            log.error("Cannot convert qrcode data to json. Error: " + e.getMessage(), e);
+            throw new DatabaseException("Cannot convert qrcode data to json. Error: " + e.getMessage());
+        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        return QRCode.copyInstance(qrCode).qrCodeId(keyHolder.getKey().intValue());
     }
 
     @Override
@@ -126,6 +151,33 @@ public class UserRepositoryMySql implements UserRepository {
         return UserLogin.copyInstance(userLogin).id(keyHolder.getKey().intValue());
     }
 
+    @Override
+    public ClinicRoom findClinicRoomById(Integer clinicRoomId) {
+        final String sql = "SELECT clinic_room_id, clinic_id, room_name FROM clinic_rooms WHERE clinic_room_id = :clinicRoomId";
+        return jdbcTemplate.queryForObject(sql,
+                new MapSqlParameterSource().addValue("clinicRoomId", clinicRoomId),
+                ClinicRoomRowMapper.newInstance());
+    }
+
+    @Override
+    public UserMeta updateUserMeta(Integer userId, String metaKey, String metaValue) {
+        final String sql = "INSERT INTO users_meta (user_id, meta_key, meta_value) " +
+                "VALUES (:userId, :metaKey, :metaValue) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "user_id = :userId, meta_key=:metaKey, meta_value=:metaValue";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("metaKey", metaKey)
+                .addValue("metaValue", metaValue);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int rowsAffected = jdbcTemplate.update(sql, params, keyHolder);
+        return UserMeta.newInstance()
+                .metaId( Objects.isNull(keyHolder.getKeys()) ? 0 : (int)keyHolder.getKeys().getOrDefault("meta_id", 0))
+                .userId(userId)
+                .metaKey(metaKey)
+                .metaValue(metaValue);
+    }
+
     public static class WalkInAppointmentRowMapper implements RowMapper<WalkInAppointment> {
         public static WalkInAppointmentRowMapper newInstance() {
             return new WalkInAppointmentRowMapper();
@@ -139,6 +191,22 @@ public class UserRepositoryMySql implements UserRepository {
             walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
             walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
             return walkInAppointment;
+        }
+    }
+
+    public static class ClinicRoomRowMapper implements RowMapper<ClinicRoom> {
+
+        public static ClinicRoomRowMapper newInstance() {
+            return new ClinicRoomRowMapper();
+        }
+
+
+        @Override
+        public ClinicRoom mapRow(ResultSet resultSet, int i) throws SQLException {
+            ClinicRoom clinicRoom = new ClinicRoom();
+            clinicRoom.setName(resultSet.getString("room_name"));
+            clinicRoom.setClinicRoomId(resultSet.getInt("clinic_room_id"));
+            return clinicRoom;
         }
     }
 }
