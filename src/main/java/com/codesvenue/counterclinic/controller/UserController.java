@@ -22,6 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/create-appointment")
     public WalkInAppointment createAppointment(@RequestAttribute(UserConstants.LOGGED_IN_USER) User loggedInUser,
             @RequestBody @Valid WalkInAppointmentInfoForm walkInAppointmentInfoForm, BindingResult bindingResult) {
