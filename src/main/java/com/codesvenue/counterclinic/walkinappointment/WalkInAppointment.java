@@ -5,7 +5,10 @@ import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -94,5 +97,26 @@ public class WalkInAppointment {
             patientsBeforeThisAppointmentId++;
         }
         return patientsBeforeThisAppointmentId;
+    }
+
+    public String getPatientFullName() {
+        return this.patientFirstName + " " + this.patientLastName;
+    }
+
+    public static class WalkInAppointmentRowMapper implements RowMapper<WalkInAppointment> {
+        public static WalkInAppointmentRowMapper newInstance() {
+            return new WalkInAppointmentRowMapper();
+        }
+
+        @Override
+        public WalkInAppointment mapRow(ResultSet resultSet, int i) throws SQLException {
+            WalkInAppointment walkInAppointment = new WalkInAppointment();
+            walkInAppointment.setWalkInAppointmentId(resultSet.getInt("walkin_appointment_id"));
+            walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
+            walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
+            walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
+            walkInAppointment.setCreatedAt(resultSet.getString("created_at"));
+            return walkInAppointment;
+        }
     }
 }

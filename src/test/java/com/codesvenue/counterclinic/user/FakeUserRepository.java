@@ -3,12 +3,14 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.walkinappointment.TestData;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 
 public class FakeUserRepository implements UserRepository {
     @Override
@@ -94,5 +96,17 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public UserMeta updateUserMeta(Integer userId, String metaKey, String metaValue) {
         return null;
+    }
+
+    @Override
+    public List<User> findAllUsersByRole(UserRole userRole) {
+        return null;
+    }
+
+    @Override
+    public User findUserById(int userId) {
+        User doctor = TestData.getNewUser(UserRole.DOCTOR);
+        doctor.setUserId(userId);
+        return doctor;
     }
 }

@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.Clinic;
 import com.codesvenue.counterclinic.clinic.ClinicRoom;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 @NoArgsConstructor
 public class User {
@@ -156,7 +158,7 @@ public class User {
     }
 
     private boolean isSuperAdmin() {
-        return !Objects.isNull(roles) && this.roles.contains(UserRole.SUPERADMIN);
+        return !Objects.isNull(roles) && this.roles.contains(UserRole.SUPER_ADMIN);
     }
 
     public Clinic addClinicRoomToClinic(Clinic clinic, ClinicRoom clinicRoom) {
@@ -180,7 +182,7 @@ public class User {
 
     private boolean isSuperAdminOrReceptionist() {
         return !Objects.isNull(roles) &&
-                (this.roles.contains(UserRole.RECEPTIONIST) || this.roles.contains(UserRole.SUPERADMIN));
+                (this.roles.contains(UserRole.RECEPTIONIST) || this.roles.contains(UserRole.SUPER_ADMIN));
     }
 
     public WalkInAppointment createWalkInAppointment(String patientFirstName, String patientLastName, User appointedDoctor) {
@@ -223,6 +225,17 @@ public class User {
         throw new ActionNotAllowedException("Only admins or super admins can create new user.");
     }
 
+    public static UserRole[] convertRoleToUserRoleEnum(String[] roles) {
+        UserRole[] userRoles = new UserRole[roles.length];
+        for(int index = 0; index < roles.length; index++)
+            userRoles[index] = UserRole.valueOf(roles[index]);
+        return userRoles;
+    }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
+
     public static class UserRowMapper implements RowMapper<User> {
 
         public static UserRowMapper newInstance() {
@@ -238,8 +251,11 @@ public class User {
                     .email(resultSet.getString("email"))
                     .mobile(resultSet.getString("mobile"))
                     .username(resultSet.getString("username"))
-                    .roles(UserRole.valueOf(resultSet.getString("user_role")))
+                    .roles(User.convertRoleToUserRoleEnum(resultSet.getString("user_roles").split(",")))
+                    .preferredLanguage(PreferredLanguage.valueOf(resultSet.getString("preferred_language")))
                     .assignClinicRoomId(resultSet.getInt("assigned_clinic_room"));
         }
+
+
     }
 }

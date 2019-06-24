@@ -1,5 +1,6 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.User;
 import com.codesvenue.counterclinic.user.UserRole;
 import org.junit.Assert;
@@ -10,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class WalkInAppointmentServiceTest {
 
@@ -17,7 +19,8 @@ public class WalkInAppointmentServiceTest {
 
     @Before
     public void setup() {
-        AppointmentRepository appointmentRepository = new FakeAppointmentRepository();
+//        AppointmentRepository appointmentRepository = new FakeAppointmentRepository();
+        AppointmentRepository appointmentRepository = new AppointmentRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
         SimpMessagingTemplate simpMessagingTemplate = Mockito.mock(SimpMessagingTemplate.class);
         walkInAppointmentService = new WalkInAppointmentServiceImpl(appointmentRepository, simpMessagingTemplate);
         TestData.appointmentStatusList = new ArrayList<>();
@@ -78,5 +81,40 @@ public class WalkInAppointmentServiceTest {
 
         newAppointmentStatus = walkInAppointmentService.callNextPatient(user);
         Assert.assertEquals(2, (int) newAppointmentStatus.getCurrentAppointmentId());
+    }
+
+    @Test
+    public void itShouldFetchAllWalkInAppointments() {
+        WalkInAppointments walkInAppointments = walkInAppointmentService.getAllAppointments();
+        Assert.assertNotNull(walkInAppointments);
+        Assert.assertFalse(walkInAppointments.getWalkInAppointmentList().isEmpty());
+    }
+
+    @Test
+    public void itShouldDeleteAppointmentByAppointmentId() {
+        boolean isDeleteSuccessful = walkInAppointmentService.deleteAppointment(15);
+        Assert.assertTrue(isDeleteSuccessful);
+    }
+
+    @Test
+    public void itShouldGetQRCodeByAppointmentId() {
+        QRCode qrCode = walkInAppointmentService.getQrCodeForAppointment(1);
+        Assert.assertNotNull(qrCode);
+    }
+
+    @Test
+    public void itShouldFetchAppointmentWithAttachment() {
+        List<WalkInAppointmentWithAttachment> walkInAppointmentWithAttachment = walkInAppointmentService.getAllWalkInAppointmentWithAttachment();
+        Assert.assertNotNull(walkInAppointmentWithAttachment);
+        Assert.assertFalse(walkInAppointmentWithAttachment.isEmpty());
+    }
+
+    @Test
+    public void itShouldFetchAppointmentWrapperByAppointmentId() {
+        WalkInAppointmentWrapper walkInAppointmentWrapper = walkInAppointmentService.getWrappedAppointment(5);
+        Assert.assertNotNull(walkInAppointmentWrapper);
+        Assert.assertNotNull(walkInAppointmentWrapper.getAppointedDoctor());
+        Assert.assertNotNull(walkInAppointmentWrapper.getQrCode());
+        Assert.assertNotNull(walkInAppointmentWrapper.getWalkInAppointment());
     }
 }

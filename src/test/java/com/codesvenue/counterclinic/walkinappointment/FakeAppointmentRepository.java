@@ -1,12 +1,11 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @Log4j
@@ -26,5 +25,41 @@ public class FakeAppointmentRepository implements AppointmentRepository {
         appointmentStatus.setAppointmentStatusId(TestData.appointmentStatusList.size()+1);
         TestData.store(appointmentStatus);
         return appointmentStatus;
+    }
+
+    @Override
+    public WalkInAppointments fetchAllWalkInAppointments() {
+        return null;
+    }
+
+    @Override
+    public int deleteWalkInAppointment(int appointmentId) {
+        return 1;
+    }
+
+    @Override
+    public QRCode deleteQrCodeAttachment(int appointmentId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("appointmentId", 5);
+        data.put("doctorId", 1);
+        return QRCodeBuilder.newInstance().build(1, data);
+    }
+
+    @Override
+    public QRCode fetchQrCodeAttachment(int appointmentId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("appointmentId", 5);
+        data.put("doctorId", 1);
+        return QRCodeBuilder.newInstance().build(1, data);
+    }
+
+    @Override
+    public List<WalkInAppointmentWithAttachment> fetchAllWalkInAppointmentsWithAttachments() {
+        return null;
+    }
+
+    @Override
+    public WalkInAppointmentWrapper findWalkInAppointmentById(int appointmentId) {
+        return null;
     }
 }

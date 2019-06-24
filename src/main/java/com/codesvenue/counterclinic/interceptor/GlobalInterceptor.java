@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.controller;
+package com.codesvenue.counterclinic.interceptor;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -10,6 +10,8 @@ import com.codesvenue.counterclinic.user.UserRepository;
 import com.codesvenue.counterclinic.user.UserService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
-@Component
+//@Component
 @Log4j
 public class GlobalInterceptor implements HandlerInterceptor, WebMvcConfigurer {
     private static final String AUTHORIZATION_HEADER = "Authorization";
@@ -35,7 +37,7 @@ public class GlobalInterceptor implements HandlerInterceptor, WebMvcConfigurer {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = request.getHeader(AUTHORIZATION_HEADER);
-        log.debug("Access Token: " + accessToken);
+        System.out.println("Access Token: " + accessToken);
 
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET.getBytes()))
                 .withIssuer("counterclinic").build();

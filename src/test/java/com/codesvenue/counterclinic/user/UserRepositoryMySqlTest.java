@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserRepositoryMySqlTest {
@@ -125,5 +126,18 @@ public class UserRepositoryMySqlTest {
         UserMeta userMeta = userRepository.updateUserMeta(1, UserConstants.ASSIGNED_CLINIC_ROOM, "2");
         Assert.assertNotNull(userMeta);
         Assert.assertNotNull(userMeta.getMetaId());
+    }
+
+    @Test
+    public void itShouldFetchAllTheUsersByRole() {
+        List<User> users = userRepository.findAllUsersByRole(UserRole.DOCTOR);
+        Assert.assertNotNull(users);
+        Assert.assertFalse(users.isEmpty());
+    }
+
+    @Test
+    public void itShouldFetchUserByUserId() {
+        User user = userRepository.findUserById(1);
+        Assert.assertNotNull(user);
     }
 }

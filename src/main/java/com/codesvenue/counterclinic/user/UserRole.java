@@ -2,7 +2,7 @@ package com.codesvenue.counterclinic.user;
 
 public enum UserRole {
 
-    SUPERADMIN,
+    SUPER_ADMIN,
     ADMIN,
     DOCTOR, RECEPTIONIST
 }

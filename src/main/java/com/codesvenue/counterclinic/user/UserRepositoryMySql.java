@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Repository
 @Log4j
+@Repository
 public class UserRepositoryMySql implements UserRepository {
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -59,7 +59,7 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public User findDoctorById(Integer doctorId) {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at,\n" +
-                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :userRole AND t2.user_id = :userId) as user_role,\n" +
+                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :userRole AND t2.user_id = :userId) as user_roles,\n" +
                 "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :assignedClinicRoom AND t2.user_id = :userId) as assigned_clinic_room\n" +
                 "FROM users t1\n" +
                 "WHERE t1.user_id = :userId";
@@ -101,7 +101,7 @@ public class UserRepositoryMySql implements UserRepository {
                 "WHERE t1.walkin_appointment_id = :walkInAppointmentId";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("walkInAppointmentId", nextAppointmentId);
-        return jdbcTemplate.queryForObject(sql, params, WalkInAppointmentRowMapper.newInstance());
+        return jdbcTemplate.queryForObject(sql, params, WalkInAppointment.WalkInAppointmentRowMapper.newInstance());
     }
 
     @Override
@@ -123,12 +123,12 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public User createNewUser(User user) {
         final String sql = "INSERT INTO users (first_name, last_name, email, mobile, username, preferred_language) " +
-                "values (:firstName, :lastName, :email, :mobile, :username, :preferredLanguage)";
+                "values (:patientFirstName, :patientLastName, :email, :mobile, :username, :preferredLanguage)";
         System.out.println("Preferred Language: "  + user.getPreferredLanguage());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("firstName", user.getFirstName())
-                .addValue("lastName", user.getLastName())
+                .addValue("patientFirstName", user.getFirstName())
+                .addValue("patientLastName", user.getLastName())
                 .addValue("email", user.getEmail())
                 .addValue("mobile", user.getMobile())
                 .addValue("username", user.getUsername())
@@ -156,7 +156,7 @@ public class UserRepositoryMySql implements UserRepository {
         final String sql = "SELECT clinic_room_id, clinic_id, room_name FROM clinic_rooms WHERE clinic_room_id = :clinicRoomId";
         return jdbcTemplate.queryForObject(sql,
                 new MapSqlParameterSource().addValue("clinicRoomId", clinicRoomId),
-                ClinicRoomRowMapper.newInstance());
+                Clinic.ClinicRoomRowMapper.newInstance());
     }
 
     @Override
@@ -178,35 +178,28 @@ public class UserRepositoryMySql implements UserRepository {
                 .metaValue(metaValue);
     }
 
-    public static class WalkInAppointmentRowMapper implements RowMapper<WalkInAppointment> {
-        public static WalkInAppointmentRowMapper newInstance() {
-            return new WalkInAppointmentRowMapper();
-        }
-
-        @Override
-        public WalkInAppointment mapRow(ResultSet resultSet, int i) throws SQLException {
-            WalkInAppointment walkInAppointment = new WalkInAppointment();
-            walkInAppointment.setWalkInAppointmentId(resultSet.getInt("walkin_appointment_id"));
-            walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
-            walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
-            walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
-            return walkInAppointment;
-        }
+    @Override
+    public List<User> findAllUsersByRole(UserRole userRole) {
+        final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
+                "FROM users t1 WHERE t1.user_id IN (SELECT t3.user_id FROM user_roles t3 WHERE t3.role_name = :userRole);";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userRole", userRole.toString());
+        List<User> users = jdbcTemplate.query(sql, params, User.UserRowMapper.newInstance());
+        return users;
     }
 
-    public static class ClinicRoomRowMapper implements RowMapper<ClinicRoom> {
-
-        public static ClinicRoomRowMapper newInstance() {
-            return new ClinicRoomRowMapper();
-        }
-
-
-        @Override
-        public ClinicRoom mapRow(ResultSet resultSet, int i) throws SQLException {
-            ClinicRoom clinicRoom = new ClinicRoom();
-            clinicRoom.setName(resultSet.getString("room_name"));
-            clinicRoom.setClinicRoomId(resultSet.getInt("clinic_room_id"));
-            return clinicRoom;
-        }
+    @Override
+    public User findUserById(int userId) {
+        final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
+                "   ( " +
+                "       SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role " +
+                "       FROM user_roles t2 WHERE t2.user_id = t1.user_id " +
+                "   ) as user_roles,\n" +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room\n" +
+                "FROM users t1 WHERE user_id = :userId";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
+        return jdbcTemplate.queryForObject(sql, params, User.UserRowMapper.newInstance());
     }
 }

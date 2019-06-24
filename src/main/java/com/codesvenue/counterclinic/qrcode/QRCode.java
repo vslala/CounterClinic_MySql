@@ -4,7 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import org.springframework.jdbc.core.RowMapper;
 
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 @NoArgsConstructor
@@ -81,5 +86,31 @@ public class QRCode {
 
     public String getQrCodeDataInJson() throws JsonProcessingException {
         return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(qrCodeData);
+    }
+
+    @Log4j
+    public static class QRCodeRowMapper implements RowMapper<QRCode> {
+
+        public static QRCodeRowMapper newInstance() {
+            return new QRCodeRowMapper();
+        }
+
+        @Override
+        public QRCode mapRow(ResultSet resultSet, int i) throws SQLException {
+            QRCode qrCode = new QRCode();
+            qrCode.setQrCodeId(resultSet.getInt("qrcode_id"));
+            qrCode.setAppointmentId(resultSet.getInt("appointment_id"));
+            qrCode.setQrCodeHeight(resultSet.getInt("height"));
+            qrCode.setQrCodeWidth(resultSet.getInt("width"));
+            qrCode.setQrCodeName(resultSet.getString("image_name"));
+            qrCode.setQrCodeFilePath(resultSet.getString("image_file_path"));
+            qrCode.setQrCodeUrlPath(resultSet.getString("image_url_path"));
+            try {
+                qrCode.setQrCodeData(new ObjectMapper().readValue(resultSet.getString("qrcode_data"), Map.class));
+            } catch (IOException e) {
+                log.error("Error converting json to object.", e);
+            }
+            return qrCode;
+        }
     }
 }

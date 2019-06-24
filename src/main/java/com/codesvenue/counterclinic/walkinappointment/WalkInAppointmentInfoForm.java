@@ -9,9 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class WalkInAppointmentInfoForm {
     @NotNull
-    private String firstName;
+    private String patientFirstName;
     @NotNull
-    private String lastName;
+    private String patientLastName;
     private Integer doctorId;
     private Integer clinicId;
 
@@ -20,12 +20,12 @@ public class WalkInAppointmentInfoForm {
     }
 
     public WalkInAppointmentInfoForm firstName(String firstName) {
-        this.firstName =  firstName;
+        this.patientFirstName =  firstName;
         return this;
     }
 
     public WalkInAppointmentInfoForm lastName(String lastName) {
-        this.lastName = lastName;
+        this.patientLastName = lastName;
         return this;
     }
 

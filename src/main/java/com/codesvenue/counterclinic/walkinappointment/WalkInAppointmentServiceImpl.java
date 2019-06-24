@@ -1,10 +1,13 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.User;
 import lombok.extern.log4j.Log4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -57,6 +60,38 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
 
         user.askReceptionistToSendNextPatient(newAppointmentStatus.getCurrentAppointmentId(), simpMessagingTemplate);
         return appointmentStatus;
+    }
+
+    @Override
+    public WalkInAppointments getAllAppointments() {
+        WalkInAppointments walkInAppointments = appointmentRepository.fetchAllWalkInAppointments();
+        return walkInAppointments;
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteAppointment(int appointmentId) {
+        int rowsAffected = appointmentRepository.deleteWalkInAppointment(appointmentId);
+        QRCode qrCode = appointmentRepository.deleteQrCodeAttachment(appointmentId);
+        Paths.get(qrCode.getQrCodeFilePath()).toFile().delete();
+        return rowsAffected > 0;
+    }
+
+    @Override
+    public QRCode getQrCodeForAppointment(int appointmentId) {
+        return appointmentRepository.fetchQrCodeAttachment(appointmentId);
+    }
+
+    @Override
+    public List<WalkInAppointmentWithAttachment> getAllWalkInAppointmentWithAttachment() {
+        return appointmentRepository.fetchAllWalkInAppointmentsWithAttachments();
+    }
+
+    @Transactional
+    @Override
+    public WalkInAppointmentWrapper getWrappedAppointment(int appointmentId) {
+        WalkInAppointmentWrapper walkInAppointmentWrapper = appointmentRepository.findWalkInAppointmentById(appointmentId);
+        return walkInAppointmentWrapper;
     }
 
 }

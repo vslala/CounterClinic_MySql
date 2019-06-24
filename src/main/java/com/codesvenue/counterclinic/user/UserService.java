@@ -6,6 +6,8 @@ import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointmentInfoForm;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface UserService {
     Clinic createNewClinic(User admin, ClinicForm clinicForm);
@@ -17,4 +19,8 @@ public interface UserService {
     User addNewDoctor(User admin, User doctor);
 
     User assignDoctorClinic(User receptionist, Integer clinicForm, Integer assignDoctorId);
+
+    List<User> getAllUsers(UserRole userRole);
+
+    User getUser(int userId);
 }

@@ -36,7 +36,7 @@ public class UserTest {
 
     @Test
     public void onlySuperAdminUserCanCreateNewClinics() {
-        user.setRoles(Arrays.asList(new UserRole[]{UserRole.SUPERADMIN}));
+        user.setRoles(Arrays.asList(new UserRole[]{UserRole.SUPER_ADMIN}));
         String clinicName = "Counter Clinic";
         Clinic newClinic = user.createNewClinic(clinicName);
         Assert.assertNotNull(newClinic);
@@ -53,7 +53,7 @@ public class UserTest {
 
     @Test
     public void superAdminUserCanAddNewRoomsToTheClinic() {
-        user.setRoles(Arrays.asList(UserRole.SUPERADMIN));
+        user.setRoles(Arrays.asList(UserRole.SUPER_ADMIN));
         ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
         Clinic clinic  = Clinic.newInstance("Counter Clinic");
         Clinic newClinicWithRooms = user.addClinicRoomToClinic(clinic, clinicRoom);
@@ -72,7 +72,7 @@ public class UserTest {
 
     @Test
     public void superAdminUserCanAssignRoomsToDoctor() {
-        user.setRoles(Arrays.asList(UserRole.SUPERADMIN));
+        user.setRoles(Arrays.asList(UserRole.SUPER_ADMIN));
         ClinicRoom clinicRoom = ClinicRoom.newInstance("X-RAY");
         User doctor = TestData.getNewUser(UserRole.DOCTOR);
         User assignedDoctor = user.assignClinicRoom(clinicRoom, doctor);

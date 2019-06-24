@@ -2,7 +2,10 @@ package com.codesvenue.counterclinic.clinic;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 @Data
@@ -41,5 +44,21 @@ public class Clinic {
 
     public List<ClinicRoom> getClinicRooms() {
         return Collections.unmodifiableList(rooms);
+    }
+
+    public static class ClinicRoomRowMapper implements RowMapper<ClinicRoom> {
+
+        public static ClinicRoomRowMapper newInstance() {
+            return new ClinicRoomRowMapper();
+        }
+
+
+        @Override
+        public ClinicRoom mapRow(ResultSet resultSet, int i) throws SQLException {
+            ClinicRoom clinicRoom = new ClinicRoom();
+            clinicRoom.setName(resultSet.getString("room_name"));
+            clinicRoom.setClinicRoomId(resultSet.getInt("clinic_room_id"));
+            return clinicRoom;
+        }
     }
 }

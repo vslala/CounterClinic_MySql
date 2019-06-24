@@ -9,11 +9,14 @@ import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointmentInfoForm;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,19 +36,19 @@ public class UserServiceImpl implements UserService {
         return userRepository.createNewClinic(newClinic);
     }
 
-    @Value("qrcode.folder.path")
+    @Value("${qrcode.folder.path}")
     private String qrCodeFolder;
 
-    @Value("qrcode.url.path")
+    @Value("${qrcode.url.path}")
     private String qrCodeUrlPath;
 
     @Transactional
     @Override
     public WalkInAppointment createNewWalkInAppointment(User receptionist, WalkInAppointmentInfoForm walkInAppointmentInfoForm) {
         WalkInAppointment walkInAppointment = receptionist.createWalkInAppointment(
-                walkInAppointmentInfoForm.getFirstName(),
-                walkInAppointmentInfoForm.getLastName(),
-                userRepository.findDoctorById(walkInAppointmentInfoForm.getDoctorId()));
+                walkInAppointmentInfoForm.getPatientFirstName(),
+                walkInAppointmentInfoForm.getPatientLastName(),
+                userRepository.findUserById(walkInAppointmentInfoForm.getDoctorId()));
         WalkInAppointment newWalkInAppointment = userRepository.createNewWalkInAppointment(walkInAppointment);
         QRCode qrCode = generateQRCode(newWalkInAppointment);
         userRepository.createNewQRCode(qrCode);
@@ -76,6 +79,16 @@ public class UserServiceImpl implements UserService {
         User assignedDoctor = receptionist.assignClinicRoom(clinicRoom, doctor);
         UserMeta userMeta = userRepository.updateUserMeta(assignedDoctor.getUserId(), UserConstants.ASSIGNED_CLINIC_ROOM, clinicRoom.getClinicRoomId().toString());
         return assignedDoctor;
+    }
+
+    @Override
+    public List<User> getAllUsers(UserRole userRole) {
+        return userRepository.findAllUsersByRole(userRole);
+    }
+
+    @Override
+    public User getUser(int userId) {
+        return userRepository.findUserById(userId);
     }
 
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {

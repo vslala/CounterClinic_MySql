@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class UserServiceTest {
@@ -123,5 +124,19 @@ public class UserServiceTest {
         User newDoctor = userService.addNewDoctor(admin, doctor);
         Assert.assertNotNull(newDoctor);
         Assert.assertNotNull(newDoctor.getUserId());
+    }
+
+    @Test
+    public void itShouldFetchAllTheUserByRole() {
+        List<User> doctors = userService.getAllUsers(UserRole.DOCTOR);
+
+        Assert.assertNotNull(doctors);
+        Assert.assertFalse(doctors.isEmpty());
+    }
+
+    @Test
+    public void itShouldFetchUserById() {
+        User user = userService.getUser(1);
+        Assert.assertNotNull(user);
     }
 }

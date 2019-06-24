@@ -6,6 +6,8 @@ import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface UserRepository {
     Clinic createNewClinic(Clinic newClinic);
@@ -27,4 +29,8 @@ public interface UserRepository {
     ClinicRoom findClinicRoomById(Integer clinicRoomId);
 
     UserMeta updateUserMeta(Integer userId, String metaKey, String metaValue);
+
+    List<User> findAllUsersByRole(UserRole userRole);
+
+    User findUserById(int userId);
 }
