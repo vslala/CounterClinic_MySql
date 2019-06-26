@@ -1,9 +1,13 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.clinic.Clinic;
-import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Clinic;
+import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.user.model.ActionNotAllowedException;
+import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.TestData;
-import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -106,11 +110,12 @@ public class UserTest {
     public void doctorCallsTheNextPatientInsideAndNotifiesReceptionist() {
         user.setRoles(Arrays.asList(UserRole.DOCTOR));
 
-        Integer nextAppointmentId = 2;
+        AppointmentStatus appointmentStatus = new AppointmentStatus();
+        appointmentStatus.setCurrentAppointmentId(2);
         Mockito mock = new Mockito();
         SimpMessagingTemplate simpMessagingTemplate = mock.mock(SimpMessagingTemplate.class);
 
-        boolean isNotified = user.askReceptionistToSendNextPatient(nextAppointmentId, simpMessagingTemplate);
+        boolean isNotified = user.askReceptionistToSendNextPatient(appointmentStatus, simpMessagingTemplate);
         Assert.assertTrue(isNotified);
     }
 }

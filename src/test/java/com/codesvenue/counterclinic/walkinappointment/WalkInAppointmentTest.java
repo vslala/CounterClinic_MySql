@@ -1,11 +1,11 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
-import com.codesvenue.counterclinic.clinic.ClinicRoom;
-import com.codesvenue.counterclinic.clinic.ClinicRoomNotAssignedToDoctorException;
-import com.codesvenue.counterclinic.user.User;
-import com.codesvenue.counterclinic.user.UserRole;
-import com.codesvenue.counterclinic.walkinappointment.AppointedUserIsNotADoctor;
-import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.ClinicRoomNotAssignedToDoctorException;
+import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserRole;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointedUserIsNotADoctor;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;

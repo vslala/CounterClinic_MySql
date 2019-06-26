@@ -1,11 +1,18 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.clinic.Clinic;
-import com.codesvenue.counterclinic.clinic.ClinicForm;
-import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Clinic;
+import com.codesvenue.counterclinic.clinic.model.ClinicForm;
+import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.user.dao.UserRepository;
+import com.codesvenue.counterclinic.user.dao.UserRepositoryMySql;
+import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserRole;
+import com.codesvenue.counterclinic.user.service.UserService;
+import com.codesvenue.counterclinic.user.service.UserServiceImpl;
 import com.codesvenue.counterclinic.walkinappointment.TestData;
-import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
-import com.codesvenue.counterclinic.walkinappointment.WalkInAppointmentInfoForm;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,11 +20,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -110,9 +115,9 @@ public class UserServiceTest {
         User doctor = new User();
         doctor.setRoles(Arrays.asList(UserRole.DOCTOR));
         doctor.setClinicRoom(ClinicRoom.newInstance("X-RAY"));
-        Integer nextAppointmentId  = 2;
+        AppointmentStatus appointmentStatus = new AppointmentStatus().appointmentStatusId(2);
 
-        WalkInAppointment nextAppointment = userService.notifyReceptionToSendNextPatient(doctor, nextAppointmentId);
+        WalkInAppointment nextAppointment = userService.notifyReceptionToSendNextPatient(doctor, appointmentStatus);
 
         Assert.assertNotNull(nextAppointment);
     }

@@ -12,15 +12,12 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-//        registry.addEndpoint(EndPoint.WEBSOCKET.getEndPointUrl()).withSockJS();
         registry.addEndpoint("/gs-guide-websocket").setAllowedOrigins("*").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-//        config.enableSimpleBroker(EndPoint.DOCTOR_ACTION_CALL_NEXT_PATIENT.getTopic());
         config.enableSimpleBroker("/topic");
-//        config.setApplicationDestinationPrefixes(EndPoint.WEBSOCKET.getTopic());
         config.setApplicationDestinationPrefixes("/app");
     }
 }

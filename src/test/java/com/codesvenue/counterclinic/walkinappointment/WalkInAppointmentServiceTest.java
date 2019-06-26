@@ -1,11 +1,19 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
-import com.codesvenue.counterclinic.user.User;
-import com.codesvenue.counterclinic.user.UserRole;
+import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserRole;
+import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepository;
+import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepositoryMySql;
+import com.codesvenue.counterclinic.walkinappointment.model.*;
+import com.codesvenue.counterclinic.walkinappointment.service.EmptyWalkInAppointmentException;
+import com.codesvenue.counterclinic.walkinappointment.service.WalkInAppointmentService;
+import com.codesvenue.counterclinic.walkinappointment.service.WalkInAppointmentServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -77,10 +85,12 @@ public class WalkInAppointmentServiceTest {
         User user = User.newInstance().roles(UserRole.DOCTOR).userId(1);
         AppointmentStatus newAppointmentStatus = walkInAppointmentService.callNextPatient(user);
         Assert.assertNotNull(newAppointmentStatus);
-        Assert.assertEquals(1, (int) newAppointmentStatus.getCurrentAppointmentId());
+//        Assert.assertEquals(1, (int) newAppointmentStatus.getCurrentAppointmentId());
+        Assert.assertEquals(15, (int) newAppointmentStatus.getCurrentAppointmentId());
 
-        newAppointmentStatus = walkInAppointmentService.callNextPatient(user);
-        Assert.assertEquals(2, (int) newAppointmentStatus.getCurrentAppointmentId());
+//        newAppointmentStatus = walkInAppointmentService.callNextPatient(user);
+//        Assert.assertEquals(16, (int) newAppointmentStatus.getCurrentAppointmentId());
+//        Assert.assertEquals(2, (int) newAppointmentStatus.getCurrentAppointmentId());
     }
 
     @Test
@@ -116,5 +126,24 @@ public class WalkInAppointmentServiceTest {
         Assert.assertNotNull(walkInAppointmentWrapper.getAppointedDoctor());
         Assert.assertNotNull(walkInAppointmentWrapper.getQrCode());
         Assert.assertNotNull(walkInAppointmentWrapper.getWalkInAppointment());
+    }
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Test
+    public void itShouldThrowEmptyWalkInAppointmentIfNoAppointmentIsPresentForTheDay() {
+        expectedException.expect(EmptyWalkInAppointmentException.class);
+        User user = User.newInstance().userId(1).roles(UserRole.DOCTOR);
+        WalkInAppointment walkInAppointment = walkInAppointmentService.getNextAppointment(user);
+        Assert.assertNotNull(walkInAppointment);
+    }
+
+    @Test
+    public void itShouldGetFirstAppointmentFromTheDoctorQueueIfAppointmentStatusIsNull() {
+        User user = User.newInstance().userId(1).roles(UserRole.DOCTOR);
+        WalkInAppointment walkInAppointment = walkInAppointmentService.getNextAppointment(user);
+        Assert.assertNotNull(walkInAppointment);
+        Assert.assertEquals(15, walkInAppointment.getWalkInAppointmentId().intValue());
     }
 }

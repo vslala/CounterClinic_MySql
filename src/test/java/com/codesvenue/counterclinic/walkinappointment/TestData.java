@@ -1,8 +1,10 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
-import com.codesvenue.counterclinic.user.PreferredLanguage;
-import com.codesvenue.counterclinic.user.User;
-import com.codesvenue.counterclinic.user.UserRole;
+import com.codesvenue.counterclinic.user.model.PreferredLanguage;
+import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserRole;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -112,7 +114,7 @@ public class TestData {
         appointmentStatus1.setDoctorId(1);
         appointmentStatus1.setCurrentAppointmentId(1);
         appointmentStatus1.setAvgWaitingTime(15);
-        appointmentStatus1.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 00)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
+        appointmentStatus1.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 00)));
         return appointmentStatus1;
     }
 
@@ -121,7 +123,7 @@ public class TestData {
         appointmentStatus2.setDoctorId(1);
         appointmentStatus2.setCurrentAppointmentId(2);
         appointmentStatus2.setAvgWaitingTime(15);
-        appointmentStatus2.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 15)).format(DateTimeFormatter.ofPattern(TestData.MYSQL_DATETIME_PATTERN)));
+        appointmentStatus2.setAppointmentStartTime(LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 6), LocalTime.of(11, 15)));
         return appointmentStatus2;
     }
 

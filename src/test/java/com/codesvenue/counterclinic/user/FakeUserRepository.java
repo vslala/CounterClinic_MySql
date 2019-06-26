@@ -1,10 +1,12 @@
 package com.codesvenue.counterclinic.user;
 
-import com.codesvenue.counterclinic.clinic.Clinic;
-import com.codesvenue.counterclinic.clinic.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Clinic;
+import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
 import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.user.dao.UserRepository;
+import com.codesvenue.counterclinic.user.model.*;
 import com.codesvenue.counterclinic.walkinappointment.TestData;
-import com.codesvenue.counterclinic.walkinappointment.WalkInAppointment;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

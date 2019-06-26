@@ -1,5 +1,8 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.walkinappointment.dao.NoMoreAppointmentsException;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
+import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +30,7 @@ public class AppointmentStatusTest {
         AppointmentStatus appointmentStatus = TestData.appointmentStatusList.get(TestData.appointmentStatusList.size()-1);
 
         LocalDateTime creationTime = LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 06), LocalTime.of(11, 30));
-        AppointmentStatus newAppointmentStatus = appointmentStatus.generateAppointmentStatus(walkInAppointmentList, creationTime);
+        AppointmentStatus newAppointmentStatus = appointmentStatus.generateAppointmentStatus(walkInAppointmentList.get(0), creationTime);
         Assert.assertNotNull(newAppointmentStatus);
         Assert.assertEquals(3, (int)newAppointmentStatus.getCurrentAppointmentId());
         Assert.assertEquals(15, (int)newAppointmentStatus.getAvgWaitingTime());
@@ -44,7 +47,7 @@ public class AppointmentStatusTest {
         AppointmentStatus appointmentStatus = TestData.appointmentStatusList.get(TestData.appointmentStatusList.size()-1);
 
         LocalDateTime creationTime = LocalDateTime.of(LocalDate.of(2019, Month.JUNE, 06), LocalTime.of(11, 30));
-        AppointmentStatus newAppointmentStatus = appointmentStatus.generateAppointmentStatus(walkInAppointmentList, creationTime);
+        AppointmentStatus newAppointmentStatus = appointmentStatus.generateAppointmentStatus(walkInAppointmentList.get(0), creationTime);
         Assert.assertNotNull(newAppointmentStatus);
         Assert.assertEquals(3, (int)newAppointmentStatus.getCurrentAppointmentId());
         Assert.assertEquals(15, (int)newAppointmentStatus.getAvgWaitingTime());

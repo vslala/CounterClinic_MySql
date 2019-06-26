@@ -2,6 +2,8 @@ package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
+import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepository;
+import com.codesvenue.counterclinic.walkinappointment.model.*;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Repository;
 
@@ -61,5 +63,10 @@ public class FakeAppointmentRepository implements AppointmentRepository {
     @Override
     public WalkInAppointmentWrapper findWalkInAppointmentById(int appointmentId) {
         return null;
+    }
+
+    @Override
+    public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorId(Integer userId) {
+        return Optional.empty();
     }
 }
