@@ -28,4 +28,6 @@ public interface WalkInAppointmentService {
     WalkInAppointment getNextAppointment(User user);
 
     AppointmentStatus getLatestAppointmentStatus(User doctor);
+
+    AppointmentStatus doctorTakesBreak(User user, int breakDuration);
 }

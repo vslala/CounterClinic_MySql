@@ -28,6 +28,7 @@ public class AppointmentStatus {
     private LocalDateTime appointmentStartTime;
     private Integer doctorBreakDuration = 0;
     private Integer patientsInVisitedQueue = 0;
+    private Integer totalAppointments;
 
     public static AppointmentStatus newInstanceWithApproxAvgWaitTime(final Integer appointmentId,
                                                                      final int approxAvgWaitTime,
@@ -95,13 +96,14 @@ public class AppointmentStatus {
     }
 
     public AppointmentStatus calculateNewAvgWaitTime(Integer breakTime) {
-        this.avgWaitingTime = (avgWaitingTime + breakTime) / 2;
+        log.debug("Avg Waiting Time: " + avgWaitingTime + ", Break Time: " + breakTime);
+        this.avgWaitingTime = avgWaitingTime + breakTime;
         return this;
     }
 
     public static AppointmentStatus newInstanceForFirstTime(Integer appointmentId, Integer doctorId, int patientsBeforeThisAppointmentId, LocalDateTime now) {
         AppointmentStatus appointmentStatus = new AppointmentStatus();
-        appointmentStatus.setAvgWaitingTime(15 * patientsBeforeThisAppointmentId);
+        appointmentStatus.setAvgWaitingTime(Math.abs(15 * patientsBeforeThisAppointmentId));
         appointmentStatus.setCurrentAppointmentId(appointmentId);
         appointmentStatus.setDoctorId(doctorId);
         appointmentStatus.setAppointmentStartTime(now);
@@ -144,6 +146,15 @@ public class AppointmentStatus {
 
     public AppointmentStatus appointmentStatusId(int appointmentStatusId) {
         this.appointmentStatusId = appointmentStatusId;
+        return this;
+    }
+    public AppointmentStatus totalAppointments(Integer totalAppointments) {
+        this.totalAppointments = totalAppointments;
+        return this;
+    }
+
+    public AppointmentStatus doctorBreakDuration(int breakDuration) {
+        this.doctorBreakDuration = breakDuration;
         return this;
     }
 

@@ -65,7 +65,6 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
         }
 
         AppointmentStatus appointmentStatus = appointmentRepository.saveAppointmentStatus(newAppointmentStatus);
-
         user.askReceptionistToSendNextPatient(appointmentStatus, simpMessagingTemplate);
         return appointmentStatus;
     }
@@ -134,6 +133,28 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
     public AppointmentStatus getLatestAppointmentStatus(User doctor) {
         Optional<AppointmentStatus> appointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorId(doctor.getUserId());
         return appointmentStatus.isPresent() ? appointmentStatus.get() : new AppointmentStatus();
+    }
+
+    @Transactional
+    @Override
+    public AppointmentStatus doctorTakesBreak(User user, int breakDuration) {
+        Optional<AppointmentStatus> latestAppointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorId(user.getUserId());
+        AppointmentStatus newAppointmentStatus = null;
+
+        if (latestAppointmentStatus.isPresent()) {
+            newAppointmentStatus = user.takeBreak(latestAppointmentStatus.get(), breakDuration);
+        } else {
+            newAppointmentStatus = user.takeBreak(AppointmentStatus.newInstanceForFirstTime(
+                            0,
+                            user.getUserId(),
+                            -1,
+                            LocalDateTime.now(ZoneOffset.UTC)),
+                    breakDuration);
+        }
+
+        newAppointmentStatus = appointmentRepository.saveAppointmentStatus(newAppointmentStatus);
+        user.broadcastNewState("/topic/appointment-status", newAppointmentStatus, simpMessagingTemplate);
+        return newAppointmentStatus;
     }
 
 }

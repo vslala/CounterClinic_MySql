@@ -146,4 +146,13 @@ public class WalkInAppointmentServiceTest {
         Assert.assertNotNull(walkInAppointment);
         Assert.assertEquals(15, walkInAppointment.getWalkInAppointmentId().intValue());
     }
+
+    @Test
+    public void itShouldInsertANewAppointmentStatusWhenDoctorTakesABreak() {
+        User user = User.newInstance().userId(1).roles(UserRole.DOCTOR);
+        int breakDuration = 23;
+        AppointmentStatus appointmentStatus = walkInAppointmentService.doctorTakesBreak(user, breakDuration);
+        Assert.assertNotNull(appointmentStatus);
+        Assert.assertEquals(23, appointmentStatus.getDoctorBreakDuration().intValue());
+    }
 }

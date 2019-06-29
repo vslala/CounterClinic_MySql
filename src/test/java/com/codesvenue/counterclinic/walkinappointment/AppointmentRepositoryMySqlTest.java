@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.walkinappointment;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepository;
 import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepositoryMySql;
+import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentWithAttachment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointments;
@@ -11,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 public class AppointmentRepositoryMySqlTest {
 
@@ -61,6 +63,12 @@ public class AppointmentRepositoryMySqlTest {
         List<WalkInAppointmentWithAttachment> wrapper = appointmentRepository.fetchAllWalkInAppointmentsWithAttachments();
         Assert.assertNotNull(wrapper.get(0).getWalkInAppointment());
         Assert.assertNotNull(wrapper.get(0).getAttachedQRCode());
+    }
+
+    @Test
+    public void itShouldFetchLatestAppointmentStatus() {
+        Optional<AppointmentStatus> appointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorId(1);
+        Assert.assertTrue(appointmentStatus.isPresent());
     }
 
 }

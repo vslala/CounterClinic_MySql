@@ -61,4 +61,11 @@ public class WalkInAppointmentController {
         AppointmentStatus appointmentStatus = walkInAppointmentService.getLatestAppointmentStatus(user);
         return ResponseEntity.ok(appointmentStatus);
     }
+
+    @GetMapping("/take-break")
+    public ResponseEntity<AppointmentStatus> takeBreak(@RequestParam("breakDuration") int breakDuration) {
+        User user = User.newInstance().userId(1).roles(UserRole.DOCTOR);
+        AppointmentStatus appointmentStatus = walkInAppointmentService.doctorTakesBreak(user, breakDuration);
+        return ResponseEntity.ok(appointmentStatus);
+    }
 }

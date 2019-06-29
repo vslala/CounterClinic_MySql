@@ -35,9 +35,11 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
 
     @Override
     public List<AppointmentStatus> fetchAppointmentStatusList(Integer doctorId) {
-        final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue \n" +
-                "FROM walkin_appointment_status t1 \n" +
-                "WHERE t1.doctor_id=:doctorId";
+        final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
+                "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments\n" +
+                "FROM walkin_appointment_status t1\n" +
+                "WHERE t1.doctor_id=:doctorId\n" +
+                "ORDER BY t1.walkin_appointment_status_id DESC\n";
         SqlParameterSource params = new MapSqlParameterSource().addValue("doctorId", doctorId);
         return jdbcTemplate.query(sql, params, AppointmentStatus.AppointmentStatusRowMapper.newInstance());
     }
@@ -133,9 +135,10 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     @Override
     public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorId(Integer userId) {
         try {
-            final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue\n" +
+            final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
+                    "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments\n" +
                     "FROM walkin_appointment_status t1\n" +
-                    "WHERE t1.doctor_id=:doctorId \n" +
+                    "WHERE t1.doctor_id=:doctorId\n" +
                     "ORDER BY t1.walkin_appointment_status_id DESC\n" +
                     "LIMIT 1";
             MapSqlParameterSource params = new MapSqlParameterSource().addValue("doctorId", userId);

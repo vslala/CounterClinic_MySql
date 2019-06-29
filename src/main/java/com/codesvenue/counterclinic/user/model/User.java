@@ -204,12 +204,16 @@ public class User {
     }
 
     public boolean askReceptionistToSendNextPatient(AppointmentStatus appointmentStatus, SimpMessagingTemplate simpMessagingTemplate) {
-        if (!Objects.isNull(roles) && roles.contains(UserRole.DOCTOR)) {
+        if (isDoctor()) {
             log.info("Sending data to topic: /topic/appointment-status");
             simpMessagingTemplate.convertAndSend("/topic/appointment-status", appointmentStatus);
             return true;
         }
         throw new ActionNotAllowedException("Only doctors are allowed to perform this action");
+    }
+
+    private boolean isDoctor() {
+        return !Objects.isNull(roles) && roles.contains(UserRole.DOCTOR);
     }
 
     public User roles(UserRole... userRole) {
@@ -239,6 +243,21 @@ public class User {
 
     public String getFullName() {
         return this.firstName + " " + this.lastName;
+    }
+
+    public AppointmentStatus takeBreak(AppointmentStatus latestAppointmentStatus, int breakDuration) {
+        int newBreakDuration = breakDuration < 0 ? 0 : breakDuration; // if negative duration is returned.
+        return AppointmentStatus.copyInstance(latestAppointmentStatus)
+                .calculateNewAvgWaitTime(breakDuration)
+                .doctorBreakDuration(newBreakDuration);
+    }
+
+    public boolean broadcastNewState(String topic, Object state, SimpMessagingTemplate simpMessagingTemplate) {
+        if (isDoctor() || isAdmin() || isSuperAdmin()) {
+            simpMessagingTemplate.convertAndSend(topic, state);
+            return true;
+        }
+        throw new ActionNotAllowedException("Only Admin, Doctor and SuperAdmin can broadcast messages");
     }
 
     public static class UserRowMapper implements RowMapper<User> {

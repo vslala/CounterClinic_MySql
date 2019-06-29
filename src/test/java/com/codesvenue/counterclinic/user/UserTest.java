@@ -118,4 +118,14 @@ public class UserTest {
         boolean isNotified = user.askReceptionistToSendNextPatient(appointmentStatus, simpMessagingTemplate);
         Assert.assertTrue(isNotified);
     }
+
+    @Test
+    public void doctorTakesBreak() {
+        user.setRoles(Arrays.asList(UserRole.DOCTOR));
+
+        AppointmentStatus newAppointmentStatus = user.takeBreak(new AppointmentStatus(), 14);
+        Assert.assertNotNull(newAppointmentStatus);
+        Assert.assertEquals(14, newAppointmentStatus.getDoctorBreakDuration().intValue());
+    }
+
 }
