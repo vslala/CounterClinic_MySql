@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user.service;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
@@ -26,4 +27,8 @@ public interface UserService {
     List<User> getAllUsers(UserRole userRole);
 
     User getUser(int userId);
+
+    UserLogin createNewUser(User user);
+
+    boolean deleteUser(Integer userId);
 }

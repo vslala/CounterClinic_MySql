@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,7 @@ public class UserLogin {
     private Integer userId;
     private String username;
     private String password;
+    private List<UserRole> userRoles;
     private String loggedInAt;
 
     public UserLogin(int userId, String username, String password) {

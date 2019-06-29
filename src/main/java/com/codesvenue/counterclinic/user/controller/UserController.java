@@ -1,11 +1,13 @@
 package com.codesvenue.counterclinic.user.controller;
 
 import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.user.service.UserService;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
+import lombok.Value;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -24,6 +26,20 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @PostMapping("/register-user")
+    public ResponseEntity registerUser(@Valid @RequestBody User user, BindingResult binding) {
+        if (binding.hasErrors()) {
+            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
+            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
+            log.warn("Invalid input for user reigistration." + sb.toString());
+            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
+        }
+
+        UserLogin newUserLogin = userService.createNewUser(user);
+        return ResponseEntity.ok(newUserLogin);
+
     }
 
     @PostMapping("/create-appointment")

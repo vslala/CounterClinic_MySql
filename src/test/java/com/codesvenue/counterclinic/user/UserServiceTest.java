@@ -5,7 +5,9 @@ import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
 import com.codesvenue.counterclinic.user.dao.UserRepositoryMySql;
+import com.codesvenue.counterclinic.user.model.PreferredLanguage;
 import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.user.service.UserService;
 import com.codesvenue.counterclinic.user.service.UserServiceImpl;
@@ -41,6 +43,25 @@ public class UserServiceTest {
         userService = new UserServiceImpl(origUserRepository, simpMessagingTemplate);
         ReflectionTestUtils.setField(userService, "qrCodeFolder", "src/test/resources/static/qrcode");
         ReflectionTestUtils.setField(userService, "qrCodeUrlPath", "qrcode");
+    }
+
+    @Test
+    public void itShouldRegisterNewUser() {
+        User user = User.newInstance().firstName("Sachin").lastName("Tendulkar")
+                .email("sachin.tendulkar@gmail.com").mobile("8888999912").preferredLanguage(PreferredLanguage.ENGLISH)
+                .username("sachin").roles(UserRole.ADMIN);
+        user.setPassword("simplepass");
+        UserLogin userLogin = userService.createNewUser(user);
+        Assert.assertNotNull(userLogin);
+        Assert.assertNotNull(userLogin.getUserId());
+        Assert.assertEquals("sachin", userLogin.getUsername());
+    }
+
+    @Test
+    public void itShouldCascadeDeleteUser() {
+        Integer userId = 8;
+        boolean rowsAffected = userService.deleteUser(userId);
+        Assert.assertTrue(rowsAffected);
     }
 
     @Test

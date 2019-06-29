@@ -111,4 +111,14 @@ public class FakeUserRepository implements UserRepository {
         doctor.setUserId(userId);
         return doctor;
     }
+
+    @Override
+    public int[] createUserRoles(Integer userId, UserRole... userRoles) {
+        return new int[0];
+    }
+
+    @Override
+    public int deleteCascadeUser(Integer userId) {
+        return 1;
+    }
 }

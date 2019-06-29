@@ -130,12 +130,12 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public User createNewUser(User user) {
         final String sql = "INSERT INTO users (first_name, last_name, email, mobile, username, preferred_language, created_at) " +
-                "values (:patientFirstName, :patientLastName, :email, :mobile, :username, :preferredLanguage)";
+                "values (:firstName, :lastName, :email, :mobile, :username, :preferredLanguage, created_at)";
         System.out.println("Preferred Language: "  + user.getPreferredLanguage());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("patientFirstName", user.getFirstName())
-                .addValue("patientLastName", user.getLastName())
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
                 .addValue("email", user.getEmail())
                 .addValue("mobile", user.getMobile())
                 .addValue("username", user.getUsername())
@@ -211,5 +211,23 @@ public class UserRepositoryMySql implements UserRepository {
                 "FROM users t1 WHERE user_id = :userId";
         SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
         return jdbcTemplate.queryForObject(sql, params, User.UserRowMapper.newInstance());
+    }
+
+    @Override
+    public int[] createUserRoles(Integer userId, UserRole... userRoles) {
+        final String sql = "INSERT INTO user_roles (user_id, role_name) VALUES (:userId, :roleName)";
+        SqlParameterSource[] paramsList = new MapSqlParameterSource[userRoles.length];
+        for (int index = 0; index < userRoles.length; index++) {
+            paramsList[index] = new MapSqlParameterSource().addValue("userId", userId)
+                    .addValue("roleName", userRoles[index].toString());
+        }
+        return jdbcTemplate.batchUpdate(sql, paramsList);
+    }
+
+    @Override
+    public int deleteCascadeUser(Integer userId) {
+        final String sql = "DELETE FROM users WHERE user_id = :userId";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
+        return jdbcTemplate.update(sql, params);
     }
 }

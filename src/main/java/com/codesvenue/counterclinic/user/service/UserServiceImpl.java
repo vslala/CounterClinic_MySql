@@ -96,6 +96,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserById(userId);
     }
 
+    @Transactional
+    @Override
+    public UserLogin createNewUser(User user) {
+        User newUser = userRepository.createNewUser(user);
+        UserLogin newUserLogin = userRepository.createNewUserLogin(UserLogin.newInstance(newUser));
+        userRepository.createUserRoles(newUserLogin.getUserId(), newUser.getRoles().toArray(UserRole[]::new));
+        return newUserLogin;
+    }
+
+    @Override
+    public boolean deleteUser(Integer userId) {
+        return userRepository.deleteCascadeUser(userId) > 0;
+    }
+
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {
         Map<String, Object> qrCodeData = new HashMap<>();
         qrCodeData.put("appointmentId", newWalkInAppointment.getWalkInAppointmentId());

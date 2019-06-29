@@ -132,6 +132,20 @@ public class UserRepositoryMySqlTest {
     }
 
     @Test
+    public void itShouldAddUserRolesIntoTheDatabase() {
+        Integer userId = 6;
+        int[] rowsAffected = userRepository.createUserRoles(userId, UserRole.ADMIN, UserRole.SUPER_ADMIN);
+        Assert.assertTrue(rowsAffected.length > 0);
+    }
+
+    @Test
+    public void itShouldCascadeDeleteUserFromDatabase() {
+        Integer userId = 7;
+        int rowsAffected = userRepository.deleteCascadeUser(userId);
+        Assert.assertTrue(rowsAffected > 0);
+    }
+
+    @Test
     public void itShouldFetchAllTheUsersByRole() {
         List<User> users = userRepository.findAllUsersByRole(UserRole.DOCTOR);
         Assert.assertNotNull(users);

@@ -37,4 +37,8 @@ public interface UserRepository {
     List<User> findAllUsersByRole(UserRole userRole);
 
     User findUserById(int userId);
+
+    int[] createUserRoles(Integer userId, UserRole... userRoles);
+
+    int deleteCascadeUser(Integer userId);
 }
