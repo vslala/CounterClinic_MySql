@@ -31,4 +31,8 @@ public interface UserService {
     UserLogin createNewUser(User user);
 
     boolean deleteUser(Integer userId);
+
+    List<User> getAllUsers();
+
+    User updateUser(User user);
 }

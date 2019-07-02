@@ -42,6 +42,20 @@ public class UserController {
 
     }
 
+    @PatchMapping("/update-user")
+    public ResponseEntity updateUser(@Valid @RequestBody User user, BindingResult binding) {
+//        if (binding.hasErrors()) {
+//            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
+//            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
+//            log.warn("Invalid input for user registration. " + sb.toString());
+//            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
+//        }
+
+        User updatedUser = userService.updateUser(user);
+
+        return ResponseEntity.ok(updatedUser);
+    }
+
     @PostMapping("/create-appointment")
     public WalkInAppointment createAppointment(
 //            @RequestAttribute(UserConstants.LOGGED_IN_USER) User loggedInUser,
@@ -66,12 +80,23 @@ public class UserController {
     }
 
     @GetMapping("/all/{role}")
-    public ResponseEntity<List<User>> getAllDoctors(@PathVariable("role") String role) {
+    public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable("role") String role) {
         UserRole userRole = UserRole.valueOf(role.toUpperCase());
 
         List<User> users = userService.getAllUsers(userRole);
 
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<UserRole[]> getUserRoles() {
+        return ResponseEntity.ok(UserRole.values());
     }
 
 }

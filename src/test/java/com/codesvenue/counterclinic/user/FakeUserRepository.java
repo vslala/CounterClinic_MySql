@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class FakeUserRepository implements UserRepository {
@@ -120,5 +121,15 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public int deleteCascadeUser(Integer userId) {
         return 1;
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return user;
     }
 }

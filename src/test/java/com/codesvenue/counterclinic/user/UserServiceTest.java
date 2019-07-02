@@ -165,4 +165,20 @@ public class UserServiceTest {
         User user = userService.getUser(1);
         Assert.assertNotNull(user);
     }
+
+    @Test
+    public void itShouldGetAllUsers() {
+        List<User> users = userService.getAllUsers();
+        Assert.assertFalse(users.isEmpty());
+    }
+
+    @Test
+    public void itShouldUpdateUserDetails() {
+        User user = TestData.getNewUser(UserRole.DOCTOR);
+        user.setUserId(1);
+        user.setFirstName("FirstName");
+        User updatedUser = userService.updateUser(user);
+        Assert.assertNotNull(updatedUser);
+        Assert.assertEquals("FirstName", updatedUser.getFirstName());
+    }
 }

@@ -230,4 +230,30 @@ public class UserRepositoryMySql implements UserRepository {
         SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
         return jdbcTemplate.update(sql, params);
     }
+
+    @Override
+    public List<User> findAllUsers() {
+        final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
+                " FROM users t1";
+        return jdbcTemplate.query(sql, User.UserRowMapper.newInstance());
+    }
+
+    @Override
+    public User updateUser(User user) {
+        final String sql = "UPDATE `users` SET `first_name`=:firstName, `last_name`=:lastName,`email`=:email,`mobile`=:mobile,`username`=:username,`preferred_language`=:preferredLanguage \n" +
+                "WHERE user_id = :userId";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", user.getUserId())
+                .addValue("firstName", user.getFirstName())
+                .addValue("lastName", user.getLastName())
+                .addValue("email", user.getEmail())
+                .addValue("mobile", user.getMobile())
+                .addValue("username", user.getUsername())
+                .addValue("preferredLanguage", user.getPreferredLanguage().toString());
+        jdbcTemplate.update(sql, params);
+        return User.copyInstance(user);
+    }
+
 }

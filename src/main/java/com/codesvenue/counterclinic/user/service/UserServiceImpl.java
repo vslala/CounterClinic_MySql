@@ -110,6 +110,16 @@ public class UserServiceImpl implements UserService {
         return userRepository.deleteCascadeUser(userId) > 0;
     }
 
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAllUsers();
+    }
+
+    @Override
+    public User updateUser(User user) {
+        return userRepository.updateUser(user);
+    }
+
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {
         Map<String, Object> qrCodeData = new HashMap<>();
         qrCodeData.put("appointmentId", newWalkInAppointment.getWalkInAppointmentId());

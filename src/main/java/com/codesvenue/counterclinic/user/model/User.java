@@ -58,7 +58,7 @@ public class User {
     private String password;
 
     @NotNull(message = "Preferred Language cannot be empty")
-    private PreferredLanguage preferredLanguage;
+    private PreferredLanguage preferredLanguage = PreferredLanguage.ENGLISH;
 
     @Setter
     private List<UserRole> roles;

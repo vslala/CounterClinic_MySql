@@ -157,4 +157,22 @@ public class UserRepositoryMySqlTest {
         User user = userRepository.findUserById(1);
         Assert.assertNotNull(user);
     }
+
+    @Test
+    public void itShouldFetchAllUsersFromTheDatabase() {
+        List<User> users = userRepository.findAllUsers();
+        Assert.assertNotNull(users);
+        Assert.assertFalse(users.isEmpty());
+    }
+
+    @Test
+    public void itShouldUpdateUserObject() {
+        User user = TestData.getNewUser(UserRole.ADMIN);
+        user.setUserId(2);
+        user.setFirstName("Katrina");
+        User updatedUser = userRepository.updateUser(user);
+        Assert.assertNotNull(updatedUser);
+        Assert.assertEquals("Katrina", updatedUser.getFirstName());
+    }
+
 }
