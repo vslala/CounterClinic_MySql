@@ -29,31 +29,24 @@ public class UserController {
     }
 
     @PostMapping("/register-user")
-    public ResponseEntity registerUser(@Valid @RequestBody User user, BindingResult binding) {
-        if (binding.hasErrors()) {
-            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
-            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
-            log.warn("Invalid input for user reigistration." + sb.toString());
-            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
-        }
-
+    public ResponseEntity registerUser(@Valid @RequestBody User user) {
+        log.debug("User Object: " + user);
         UserLogin newUserLogin = userService.createNewUser(user);
         return ResponseEntity.ok(newUserLogin);
 
     }
 
     @PatchMapping("/update-user")
-    public ResponseEntity updateUser(@Valid @RequestBody User user, BindingResult binding) {
-//        if (binding.hasErrors()) {
-//            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
-//            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
-//            log.warn("Invalid input for user registration. " + sb.toString());
-//            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
-//        }
-
+    public ResponseEntity updateUser(@Valid @RequestBody User user) {
+        log.debug("User Object: " + user);
         User updatedUser = userService.updateUser(user);
 
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity deleteUser(@PathVariable("userId") int userId) {
+        return ResponseEntity.ok(userService.deleteUser(userId));
     }
 
     @PostMapping("/create-appointment")
@@ -78,6 +71,8 @@ public class UserController {
         User user = userService.getUser(userId);
         return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/get/{accessToken}")
 
     @GetMapping("/all/{role}")
     public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable("role") String role) {

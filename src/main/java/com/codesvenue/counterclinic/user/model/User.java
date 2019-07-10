@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user.model;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
 import com.codesvenue.counterclinic.user.AlgorithmNotFoundException;
+import com.codesvenue.counterclinic.user.FileUploadFailedException;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,14 +12,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -35,30 +38,29 @@ public class User {
     private Integer userId;
 
     @NotNull(message = "First Name cannot be empty")
-    @Min(value = 3)
+    @Size(min = 3, max = 55, message = "First name must be greater than 3 chars")
     private String firstName;
 
     @NotNull(message = "Last Name cannot be empty")
-    @Min(value = 3)
+    @Size(min = 3, max = 55, message = "Last name must be greater than 3 chars")
     private String lastName;
 
-    @Email
+    @Email(message = "Invalid Email Address Found")
     private String email;
 
     @NotNull(message = "Mobile number cannot be empty")
-    @Min(value = 3)
-    @Max(value = 20)
+    @Size(min = 3)
     private String mobile;
 
     @NotNull(message = "Username should be unique and cannot be null.")
     private String username;
 
     @NotNull(message = "Password cannot be empty")
-    @Min(value = 5, message = "Password should be atleast 5 chars long")
+    @Size(min = 5, message = "Password should be atleast 5 chars long")
     private String password;
 
     @NotNull(message = "Preferred Language cannot be empty")
-    private PreferredLanguage preferredLanguage = PreferredLanguage.ENGLISH;
+    private PreferredLanguage preferredLanguage;
 
     @Setter
     private List<UserRole> roles;
@@ -258,6 +260,21 @@ public class User {
             return true;
         }
         throw new ActionNotAllowedException("Only Admin, Doctor and SuperAdmin can broadcast messages");
+    }
+
+    public File uploadImage(byte[] fileContent, String filePath) {
+        File file = Paths.get(filePath).toFile();
+        if (! file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        try {
+            FileUtils.writeByteArrayToFile(file, fileContent);
+        } catch (IOException e) {
+            String errorMessage = "Cannot write file to the server. File name: " + file.getName();
+            log.error(errorMessage, e);
+            throw new FileUploadFailedException(errorMessage);
+        }
+        return null;
     }
 
     public static class UserRowMapper implements RowMapper<User> {

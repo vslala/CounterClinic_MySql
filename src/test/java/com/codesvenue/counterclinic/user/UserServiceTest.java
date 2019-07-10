@@ -181,4 +181,9 @@ public class UserServiceTest {
         Assert.assertNotNull(updatedUser);
         Assert.assertEquals("FirstName", updatedUser.getFirstName());
     }
+
+    @Test
+    public void itShouldUploadUserDisplayImageToTheServer() {
+        
+    }
 }

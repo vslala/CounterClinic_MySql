@@ -16,6 +16,10 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class UserTest {
@@ -128,4 +132,11 @@ public class UserTest {
         Assert.assertEquals(14, newAppointmentStatus.getDoctorBreakDuration().intValue());
     }
 
+    @Test
+    public void uploadDisplayImageToSystemFolder() throws IOException {
+        byte[] data = Files.readAllBytes(Paths.get("src/test/resources/testimage.png"));
+        File uploadedFile = user.uploadImage(data, "src/test/resources/images/testimage.png");
+        Assert.assertNotNull(uploadedFile);
+        Assert.assertTrue(uploadedFile.getPath().contains("images/testimage"));
+    }
 }
