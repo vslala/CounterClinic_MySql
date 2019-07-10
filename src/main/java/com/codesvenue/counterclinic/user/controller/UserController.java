@@ -7,6 +7,8 @@ import com.codesvenue.counterclinic.user.service.UserService;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.Value;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @ApiOperation(value = "create new user into the database", response = UserLogin.class)
     @PostMapping("/register-user")
     public ResponseEntity registerUser(@Valid @RequestBody User user, BindingResult binding) {
         if (binding.hasErrors()) {
@@ -42,20 +45,15 @@ public class UserController {
 
     }
 
+    @ApiOperation(value = "updates the user into the database", notes = "Pass the entire use object along with roles to update", response = User.class)
     @PatchMapping("/update-user")
     public ResponseEntity updateUser(@Valid @RequestBody User user, BindingResult binding) {
-//        if (binding.hasErrors()) {
-//            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
-//            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
-//            log.warn("Invalid input for user registration. " + sb.toString());
-//            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
-//        }
-
         User updatedUser = userService.updateUser(user);
 
         return ResponseEntity.ok(updatedUser);
     }
 
+    @ApiOperation(value = "creates new appointment into the database", response = WalkInAppointment.class)
     @PostMapping("/create-appointment")
     public WalkInAppointment createAppointment(
 //            @RequestAttribute(UserConstants.LOGGED_IN_USER) User loggedInUser,
@@ -73,12 +71,14 @@ public class UserController {
         return userService.createNewWalkInAppointment(loggedInUser, walkInAppointmentInfoForm);
     }
 
+    @ApiOperation(value = "fetches user object by id", response = User.class)
     @GetMapping("/get/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable("userId") int userId) {
         User user = userService.getUser(userId);
         return ResponseEntity.ok(user);
     }
 
+    @ApiOperation(value = "fetches all users by the given role", response = User[].class)
     @GetMapping("/all/{role}")
     public ResponseEntity<List<User>> getAllUsersByRole(@PathVariable("role") String role) {
         UserRole userRole = UserRole.valueOf(role.toUpperCase());
@@ -88,12 +88,14 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @ApiOperation(value = "fetches all users from the database", response = User[].class)
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    @ApiOperation(value = "fetches all the roles present in the database", response = UserRole[].class)
     @GetMapping("/roles")
     public ResponseEntity<UserRole[]> getUserRoles() {
         return ResponseEntity.ok(UserRole.values());
