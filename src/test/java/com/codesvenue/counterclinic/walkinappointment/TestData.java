@@ -1,5 +1,6 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
+import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
 import com.codesvenue.counterclinic.user.model.PreferredLanguage;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserRole;
@@ -20,9 +21,10 @@ import java.util.UUID;
 public class TestData {
 
     private static final String driverClassName = "com.mysql.cj.jdbc.Driver";
-    private static final String url = "jdbc:mysql://localhost/counterclinicdb?serverTimezone=UTC";
+//    private static final String url = "jdbc:mysql://localhost/counterclinicdb?serverTimezone=UTC";
+    private static final String url = "jdbc:mysql://206.189.30.73/counterclinicdb?serverTimezone=UTC";
     private static final String dbUsername = "root";
-    private static final String dbPassword = "";
+    private static final String dbPassword = "P@ssword!";
 
     public static DriverManagerDataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -129,5 +131,12 @@ public class TestData {
 
     public static NamedParameterJdbcTemplate getNamedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(getDataSource());
+    }
+
+    public static List<ClinicRoom> getClinics() {
+        List<ClinicRoom> clinics = new ArrayList<>();
+        clinics.add(ClinicRoom.newInstance("X-Ray"));
+        clinics.add(ClinicRoom.newInstance("Padeo"));
+        return clinics;
     }
 }

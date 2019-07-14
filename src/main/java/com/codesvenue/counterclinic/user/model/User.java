@@ -14,10 +14,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,29 +29,30 @@ import java.util.*;
 @Log4j
 public class User {
 
+    public static final String ASSIGNED_CLINIC_ROOM_KEY = "assigned_clinic_room";
+
     private Integer userId;
 
     @NotNull(message = "First Name cannot be empty")
-    @Min(value = 3)
+    @Size(min = 3)
     private String firstName;
 
     @NotNull(message = "Last Name cannot be empty")
-    @Min(value = 3)
+    @Size(min = 3)
     private String lastName;
 
     @Email
     private String email;
 
     @NotNull(message = "Mobile number cannot be empty")
-    @Min(value = 3)
-    @Max(value = 20)
+    @Size(min = 3, max = 20)
     private String mobile;
 
     @NotNull(message = "Username should be unique and cannot be null.")
     private String username;
 
     @NotNull(message = "Password cannot be empty")
-    @Min(value = 5, message = "Password should be atleast 5 chars long")
+    @Size(min = 5, message = "Password should be atleast 5 chars long")
     private String password;
 
     @NotNull(message = "Preferred Language cannot be empty")
@@ -258,6 +256,11 @@ public class User {
             return true;
         }
         throw new ActionNotAllowedException("Only Admin, Doctor and SuperAdmin can broadcast messages");
+    }
+
+    public User assignClinicRoom(ClinicRoom clinicRoom) {
+        this.clinicRoomId = clinicRoom.getClinicRoomId();
+        return User.copyInstance(this);
     }
 
     public static class UserRowMapper implements RowMapper<User> {

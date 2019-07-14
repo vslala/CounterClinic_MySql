@@ -101,4 +101,10 @@ public class UserController {
         return ResponseEntity.ok(UserRole.values());
     }
 
+    @DeleteMapping("/{userId}")
+    public ResponseEntity deleteUserById(@PathVariable("userId") Integer userId) {
+        boolean flag = userService.deleteUser(userId);
+        return ResponseEntity.ok(flag);
+    }
+
 }
