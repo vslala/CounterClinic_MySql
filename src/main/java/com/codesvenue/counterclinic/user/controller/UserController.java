@@ -32,14 +32,8 @@ public class UserController {
 
     @ApiOperation(value = "create new user into the database", response = UserLogin.class)
     @PostMapping("/register-user")
-    public ResponseEntity registerUser(@Valid @RequestBody User user, BindingResult binding) {
-        if (binding.hasErrors()) {
-            StringBuilder sb = new StringBuilder("Errors:").append(System.lineSeparator());
-            binding.getFieldErrors().forEach(fe -> sb.append(fe.getDefaultMessage()).append(System.lineSeparator()));
-            log.warn("Invalid input for user reigistration." + sb.toString());
-            return ResponseEntity.badRequest().body("Invalid user object." + sb.toString());
-        }
-
+    public ResponseEntity registerUser(@Valid @RequestBody User user) {
+        log.debug("User Object: " + user);
         UserLogin newUserLogin = userService.createNewUser(user);
         return ResponseEntity.ok(newUserLogin);
 
@@ -47,10 +41,16 @@ public class UserController {
 
     @ApiOperation(value = "updates the user into the database", notes = "Pass the entire use object along with roles to update", response = User.class)
     @PatchMapping("/update-user")
-    public ResponseEntity updateUser(@Valid @RequestBody User user, BindingResult binding) {
+    public ResponseEntity updateUser(@Valid @RequestBody User user) {
+        log.debug("User Object: " + user);
         User updatedUser = userService.updateUser(user);
 
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity deleteUser(@PathVariable("userId") int userId){
+        return ResponseEntity.ok(userService.deleteUser(userId));
     }
 
     @ApiOperation(value = "creates new appointment into the database", response = WalkInAppointment.class)
