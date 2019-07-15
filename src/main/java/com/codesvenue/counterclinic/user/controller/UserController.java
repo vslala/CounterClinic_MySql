@@ -1,5 +1,6 @@
 package com.codesvenue.counterclinic.user.controller;
 
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -101,10 +103,19 @@ public class UserController {
         return ResponseEntity.ok(UserRole.values());
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity deleteUserById(@PathVariable("userId") Integer userId) {
-        boolean flag = userService.deleteUser(userId);
-        return ResponseEntity.ok(flag);
+    @PostMapping("/file-upload")
+    public ResponseEntity uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("attachmentType") String attachmentType) {
+        log.debug("File to upload: " + file.getOriginalFilename());
+        log.debug("File to upload size: " + file.getSize());
+        Setting uploadedFileSetting = userService.uploadFile(file, attachmentType);
+        return ResponseEntity.ok(uploadedFileSetting);
+    }
+
+    @GetMapping("/setting/{settingName}")
+    public ResponseEntity<Setting> getSettingByName(@PathVariable("settingName") String settingName) {
+        log.debug("Getting setting for name: " + settingName);
+        Setting setting = userService.getSetting(settingName);
+        return ResponseEntity.ok(setting);
     }
 
 }

@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
@@ -173,6 +174,14 @@ public class UserRepositoryMySqlTest {
         User updatedUser = userRepository.updateUser(user);
         Assert.assertNotNull(updatedUser);
         Assert.assertEquals("Katrina", updatedUser.getFirstName());
+    }
+
+    @Test
+    public void itShouldUpsertSetting() {
+        Setting setting = new Setting("TestSetting", "TestValue");
+        Setting newSetting = userRepository.upsertSetting("TestSetting", "TestValue2");
+        Assert.assertEquals("TestSetting", newSetting.getSettingName());
+        Assert.assertNotNull(newSetting.getSettingId());
     }
 
 }

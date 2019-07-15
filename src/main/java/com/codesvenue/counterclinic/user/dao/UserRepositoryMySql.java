@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.user.dao;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.configuration.DateTimeConstants;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.UserConstants;
@@ -254,6 +255,27 @@ public class UserRepositoryMySql implements UserRepository {
                 .addValue("preferredLanguage", user.getPreferredLanguage().toString());
         jdbcTemplate.update(sql, params);
         return User.copyInstance(user);
+    }
+
+    @Override
+    public Setting upsertSetting(String settingName, String settingValue) {
+        final String sql = "INSERT INTO settings (`setting_name`,`setting_value`)\n" +
+                " VALUES (:settingName, :settingValue)\n" +
+                " ON DUPLICATE KEY UPDATE\n" +
+                "  setting_name = :settingName,\n" +
+                "  setting_value = :settingValue";
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("settingName", settingName)
+                .addValue("settingValue", settingValue);
+        jdbcTemplate.update(sql, params);
+        return fetchSettingByName(settingName);
+    }
+
+    @Override
+    public Setting fetchSettingByName(String settingName) {
+        final String sql = "SELECT setting_id, setting_name, setting_value FROM settings WHERE setting_name = :settingName";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("settingName", settingName);
+        return jdbcTemplate.queryForObject(sql, params, Setting.SettingRowMapper.newInstance());
     }
 
 }

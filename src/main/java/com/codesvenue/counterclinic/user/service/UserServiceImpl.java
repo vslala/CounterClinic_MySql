@@ -3,8 +3,10 @@ package com.codesvenue.counterclinic.user.service;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
+import com.codesvenue.counterclinic.user.FileUploadFailedException;
 import com.codesvenue.counterclinic.user.UserConstants;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
 import com.codesvenue.counterclinic.user.model.User;
@@ -14,12 +16,18 @@ import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +126,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         return userRepository.updateUser(user);
+    }
+
+    @Value("${images.folder.path}")
+    String imagesFolder;
+
+    @Value("${images.url.path}")
+    String imagesUrlPath;
+
+    @Override
+    public Setting uploadFile(MultipartFile file, String attachmentType) {
+        String filePath = imagesFolder + "/" + file.getOriginalFilename();
+        String fileUrl = imagesUrlPath + "/" + file.getOriginalFilename();
+        generateDirectoryStructure(filePath);
+        try {
+            FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
+            return userRepository.upsertSetting(attachmentType, fileUrl);
+        } catch (IOException e) {
+            log.warn("Error uploading file. Error: " + e.getMessage());
+            throw new FileUploadFailedException("Error uploading file. Error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Setting getSetting(String settingName) {
+        return userRepository.fetchSettingByName(settingName);
     }
 
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {

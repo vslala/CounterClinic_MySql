@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.user;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
 import com.codesvenue.counterclinic.user.model.*;
@@ -131,5 +132,15 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public User updateUser(User user) {
         return user;
+    }
+
+    @Override
+    public Setting upsertSetting(String settingName, String settingValue) {
+        return new Setting(settingName, settingValue);
+    }
+
+    @Override
+    public Setting fetchSettingByName(String settingName) {
+        return new Setting(settingName, "TestValue").settingId(1);
     }
 }

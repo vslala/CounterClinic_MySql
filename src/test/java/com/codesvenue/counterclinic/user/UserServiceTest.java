@@ -3,6 +3,7 @@ package com.codesvenue.counterclinic.user;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
 import com.codesvenue.counterclinic.user.dao.UserRepositoryMySql;
 import com.codesvenue.counterclinic.user.model.PreferredLanguage;
@@ -21,10 +22,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -183,7 +186,21 @@ public class UserServiceTest {
     }
 
     @Test
-    public void itShouldUploadUserDisplayImageToTheServer() {
-        
+    public void itShouldUploadFileAndStoreTheInfoIntoDatabaseSettingTable() throws IOException {
+        ReflectionTestUtils.setField(userService, "imagesFolder", "src/test/resources/images");
+        ReflectionTestUtils.setField(userService, "imagesUrlPath", "images");
+
+        MockMultipartFile file = new MockMultipartFile("TestAttachmentType", Files.readAllBytes(Paths.get("src/test/resources/lala.jpg")));
+        Setting uploadedFile = userService.uploadFile(file, "Test");
+        Assert.assertNotNull(uploadedFile);
+        Assert.assertEquals("Test", uploadedFile.getSettingName());
+        Assert.assertEquals("src/test/resources/images/lala.jpg", uploadedFile.getSettingValue());
+    }
+
+    @Test
+    public void itShouldFetchSettingByName() {
+        Setting siteLogo = userService.getSetting("siteLogo");
+        Assert.assertNotNull(siteLogo);
+        Assert.assertEquals("siteLogo", siteLogo.getSettingName());
     }
 }

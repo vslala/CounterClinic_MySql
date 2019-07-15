@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.user.dao;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
+import com.codesvenue.counterclinic.clinic.model.Setting;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserLogin;
@@ -46,4 +47,7 @@ public interface UserRepository {
 
     User updateUser(User user);
 
+    Setting upsertSetting(String settingName, String settingValue);
+
+    Setting fetchSettingByName(String settingName);
 }
