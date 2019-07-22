@@ -41,7 +41,7 @@ public class WalkInAppointmentController {
         return ResponseEntity.ok(walkInAppointmentWrapper);
     }
 
-    @GetMapping("/{appointmentId}/qrcode")
+    @GetMapping("/qrcode/{appointmentId}")
     public ResponseEntity<QRCode> getQrCodeForAppointment(@PathVariable("appointmentId") int appointmentId) {
         return ResponseEntity.ok(walkInAppointmentService.getQrCodeForAppointment(appointmentId));
     }

@@ -143,4 +143,14 @@ public class FakeUserRepository implements UserRepository {
     public Setting fetchSettingByName(String settingName) {
         return new Setting(settingName, "TestValue").settingId(1);
     }
+
+    @Override
+    public List<Setting> fetchSettings() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public int deleteSetting(Integer settingId) {
+        return 1;
+    }
 }

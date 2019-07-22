@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.jdbc.core.RowMapper;
 
+import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -13,8 +14,11 @@ import java.sql.SQLException;
 @Log4j
 public class Setting {
 
+    @NotNull
     private Integer settingId;
+    @NotNull
     private String settingName;
+    @NotNull
     private String settingValue;
 
     public Setting(String settingName, String settingValue) {

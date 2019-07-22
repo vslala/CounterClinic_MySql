@@ -136,8 +136,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Setting uploadFile(MultipartFile file, String attachmentType) {
-        String filePath = imagesFolder + "/" + file.getOriginalFilename();
-        String fileUrl = imagesUrlPath + "/" + file.getOriginalFilename();
+        String originalFilename = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.]+","")
+                .replaceAll("\\s", "");
+        String filePath = imagesFolder + "/" + originalFilename;
+        String fileUrl = imagesUrlPath + "/" + originalFilename;
         generateDirectoryStructure(filePath);
         try {
             FileUtils.writeByteArrayToFile(new File(filePath), file.getBytes());
@@ -151,6 +153,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public Setting getSetting(String settingName) {
         return userRepository.fetchSettingByName(settingName);
+    }
+
+    @Override
+    public List<Setting> getSettings() {
+        return userRepository.fetchSettings();
+    }
+
+    @Override
+    public Setting updateSetting(Setting setting) {
+        return userRepository.upsertSetting(setting.getSettingName(), setting.getSettingValue());
+    }
+
+    @Override
+    public Boolean deleteSetting(Integer settingId) {
+        return userRepository.deleteSetting(settingId) > 0;
     }
 
     private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {

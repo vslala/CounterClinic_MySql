@@ -118,4 +118,22 @@ public class UserController {
         return ResponseEntity.ok(setting);
     }
 
+    @GetMapping("/settings")
+    public ResponseEntity<List<Setting>> getAllSettings() {
+        List<Setting> settings = userService.getSettings();
+        return ResponseEntity.ok(settings);
+    }
+
+    @PostMapping("/setting")
+    public ResponseEntity<Setting> updateSetting(@Valid @RequestBody Setting setting) {
+        log.debug("Settings to update: " + setting);
+        Setting updatedSetting = userService.updateSetting(setting);
+        return ResponseEntity.ok(updatedSetting);
+    }
+
+    @DeleteMapping("/setting/delete")
+    public ResponseEntity<Boolean> deleteSetting(@RequestParam Integer settingId) {
+        Boolean isSuccess = userService.deleteSetting(settingId);
+        return ResponseEntity.ok(isSuccess);
+    }
 }

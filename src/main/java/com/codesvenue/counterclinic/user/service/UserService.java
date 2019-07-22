@@ -50,4 +50,10 @@ public interface UserService {
     }
 
     Setting getSetting(String settingName);
+
+    List<Setting> getSettings();
+
+    Setting updateSetting(Setting setting);
+
+    Boolean deleteSetting(Integer settingId);
 }

@@ -50,4 +50,8 @@ public interface UserRepository {
     Setting upsertSetting(String settingName, String settingValue);
 
     Setting fetchSettingByName(String settingName);
+
+    List<Setting> fetchSettings();
+
+    int deleteSetting(Integer settingId);
 }

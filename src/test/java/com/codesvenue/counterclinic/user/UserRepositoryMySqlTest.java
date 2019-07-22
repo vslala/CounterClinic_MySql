@@ -184,4 +184,11 @@ public class UserRepositoryMySqlTest {
         Assert.assertNotNull(newSetting.getSettingId());
     }
 
+    @Test
+    public void itShouldFetchAllTheSettings() {
+        List<Setting> settings = userRepository.fetchSettings();
+        Assert.assertNotNull(settings);
+        Assert.assertFalse(settings.isEmpty());
+    }
+
 }

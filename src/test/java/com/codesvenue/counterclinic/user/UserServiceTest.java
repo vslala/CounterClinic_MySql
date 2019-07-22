@@ -198,9 +198,40 @@ public class UserServiceTest {
     }
 
     @Test
+    public void itShouldSanitizeTheImageNameBeforeUploading() throws IOException {
+        String filePath = "src/test/resources/Your Life Has No Purpose, Or Does It_.png";
+        MockMultipartFile file = new MockMultipartFile("TestAttachmentType", Files.readAllBytes(Paths.get(filePath)));
+        Setting uploadedFile = userService.uploadFile(file, "TestFileNameSanitize");
+        Assert.assertNotNull(uploadedFile);
+        Assert.assertEquals("Test", uploadedFile.getSettingName());
+        Assert.assertEquals("src/test/resources/images/YourLifeHasNoPurposeOrDoesIt_.png", uploadedFile.getSettingValue());
+    }
+
+    @Test
     public void itShouldFetchSettingByName() {
         Setting siteLogo = userService.getSetting("siteLogo");
         Assert.assertNotNull(siteLogo);
         Assert.assertEquals("siteLogo", siteLogo.getSettingName());
+    }
+
+    @Test
+    public void itShouldFetchAllSettings() {
+        List<Setting> settings = userService.getSettings();
+        Assert.assertNotNull(settings);
+        Assert.assertFalse(settings.isEmpty());
+    }
+
+    @Test
+    public void itShouldUpdateSetting() {
+        Setting setting = Setting.newInstance("TestSetting", "Test Update Setting");
+        Setting updatedSetting = userService.updateSetting(setting);
+        Assert.assertEquals("Test Update Setting", updatedSetting.getSettingValue());
+    }
+
+    @Test
+    public void itShouldDeleteSettingById() {
+        Integer id = 1;
+        Boolean isSuccess = userService.deleteSetting(id);
+        Assert.assertTrue(isSuccess);
     }
 }

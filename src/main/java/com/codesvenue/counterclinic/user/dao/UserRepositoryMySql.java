@@ -192,7 +192,7 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public List<User> findAllUsersByRole(UserRole userRole) {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
-                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.user_id) as assigned_clinic_room,\n" +
                 " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
                 "FROM users t1 WHERE t1.user_id IN (SELECT t3.user_id FROM user_roles t3 WHERE t3.role_name = :userRole);";
         SqlParameterSource params = new MapSqlParameterSource()
@@ -208,7 +208,8 @@ public class UserRepositoryMySql implements UserRepository {
                 "       SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role " +
                 "       FROM user_roles t2 WHERE t2.user_id = t1.user_id " +
                 "   ) as user_roles,\n" +
-                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room\n" +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
                 "FROM users t1 WHERE user_id = :userId";
         SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
         return jdbcTemplate.queryForObject(sql, params, User.UserRowMapper.newInstance());
@@ -235,7 +236,7 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public List<User> findAllUsers() {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
-                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.user_id) as assigned_clinic_room,\n" +
                 " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
                 " FROM users t1";
         return jdbcTemplate.query(sql, User.UserRowMapper.newInstance());
@@ -276,6 +277,19 @@ public class UserRepositoryMySql implements UserRepository {
         final String sql = "SELECT setting_id, setting_name, setting_value FROM settings WHERE setting_name = :settingName";
         SqlParameterSource params = new MapSqlParameterSource().addValue("settingName", settingName);
         return jdbcTemplate.queryForObject(sql, params, Setting.SettingRowMapper.newInstance());
+    }
+
+    @Override
+    public List<Setting> fetchSettings() {
+        final String sql = "SELECT setting_id, setting_name, setting_value FROM settings";
+        return jdbcTemplate.query(sql, Setting.SettingRowMapper.newInstance());
+    }
+
+    @Override
+    public int deleteSetting(Integer settingId) {
+        final String sql = "DELETE FROM settings WHERE setting_id = :settingId";
+        SqlParameterSource params = new MapSqlParameterSource().addValue("settingId", settingId);
+        return jdbcTemplate.update(sql, params);
     }
 
 }
