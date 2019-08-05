@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.walkinappointment.service;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.model.User;
+import com.codesvenue.counterclinic.user.service.UserService;
 import com.codesvenue.counterclinic.walkinappointment.model.*;
 import org.springframework.stereotype.Service;
 
@@ -30,4 +31,8 @@ public interface WalkInAppointmentService {
     AppointmentStatus getLatestAppointmentStatus(User doctor);
 
     AppointmentStatus doctorTakesBreak(User user, int breakDuration);
+
+    WalkInAppointment createNewWalkInAppointment(User loggedInUser, WalkInAppointmentInfoForm walkInAppointmentInfoForm);
+
+    AppointmentStatus getLatestAppointmentStatus(User userId, String day);
 }

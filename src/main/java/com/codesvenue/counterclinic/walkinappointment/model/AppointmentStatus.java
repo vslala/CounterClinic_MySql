@@ -176,6 +176,7 @@ public class AppointmentStatus {
             ));
             appointmentStatus.setDoctorBreakDuration(resultSet.getInt("doctor_break_duration"));
             appointmentStatus.setPatientsInVisitedQueue(resultSet.getInt("patients_in_visited_queue"));
+            appointmentStatus.setTotalAppointments(resultSet.getInt("total_appointments"));
             return appointmentStatus;
         }
     }

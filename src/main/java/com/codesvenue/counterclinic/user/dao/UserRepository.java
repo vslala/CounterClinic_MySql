@@ -17,8 +17,6 @@ import java.util.List;
 public interface UserRepository {
     Clinic createNewClinic(Clinic newClinic);
 
-    WalkInAppointment createNewWalkInAppointment(WalkInAppointment walkInAppointment);
-
     User findDoctorById(Integer doctorId);
 
     QRCode createNewQRCode(QRCode qrCode);

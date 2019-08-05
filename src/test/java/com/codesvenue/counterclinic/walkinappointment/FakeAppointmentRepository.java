@@ -23,6 +23,11 @@ public class FakeAppointmentRepository implements AppointmentRepository {
     }
 
     @Override
+    public List<AppointmentStatus> fetchAppointmentStatusListForToday(Integer doctorId) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public AppointmentStatus saveAppointmentStatus(AppointmentStatus appointmentStatus) {
         appointmentStatus.setAppointmentStatusId(TestData.appointmentStatusList.size()+1);
         TestData.store(appointmentStatus);
@@ -68,5 +73,20 @@ public class FakeAppointmentRepository implements AppointmentRepository {
     @Override
     public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorId(Integer userId) {
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorIdForToday(Integer doctorId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public WalkInAppointment createNewWalkInAppointment(WalkInAppointment walkInAppointment) {
+        return walkInAppointment;
+    }
+
+    @Override
+    public QRCode createNewQRCode(QRCode qrCode) {
+        return null;
     }
 }

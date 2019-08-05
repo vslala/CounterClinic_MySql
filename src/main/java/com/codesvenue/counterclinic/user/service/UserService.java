@@ -20,8 +20,6 @@ import java.util.List;
 public interface UserService {
     Clinic createNewClinic(User admin, ClinicForm clinicForm);
 
-    WalkInAppointment createNewWalkInAppointment(User receptionist, WalkInAppointmentInfoForm walkInAppointmentInfoForm);
-
     WalkInAppointment notifyReceptionToSendNextPatient(User doctor, AppointmentStatus nextAppointmentId);
 
     User addNewDoctor(User admin, User doctor);

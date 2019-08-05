@@ -1,6 +1,7 @@
 package com.codesvenue.counterclinic.user.controller;
 
 import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.user.UserConstants;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
@@ -53,24 +54,6 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity deleteUser(@PathVariable("userId") int userId){
         return ResponseEntity.ok(userService.deleteUser(userId));
-    }
-
-    @ApiOperation(value = "creates new appointment into the database", response = WalkInAppointment.class)
-    @PostMapping("/create-appointment")
-    public WalkInAppointment createAppointment(
-//            @RequestAttribute(UserConstants.LOGGED_IN_USER) User loggedInUser,
-            @RequestBody @Valid WalkInAppointmentInfoForm walkInAppointmentInfoForm, BindingResult bindingResult) {
-        log.debug("WalkIn Appointment Info: " + walkInAppointmentInfoForm);
-        if(bindingResult.hasErrors()) {
-            throw new InputValidationException("Appointment cannot be created.", bindingResult.getFieldErrors());
-        }
-
-        //TODO: remove this code
-        User loggedInUser = loggedInUser = User.newInstance().firstName("Receptionist").lastName("Paul")
-                    .roles(UserRole.RECEPTIONIST).email("receptionist.paul@cc.com").mobile("9999999999")
-                    .userId(1);
-        // -----||-----
-        return userService.createNewWalkInAppointment(loggedInUser, walkInAppointmentInfoForm);
     }
 
     @ApiOperation(value = "fetches user object by id", response = User.class)

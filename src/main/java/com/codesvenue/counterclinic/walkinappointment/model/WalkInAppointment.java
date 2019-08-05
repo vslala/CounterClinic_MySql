@@ -20,6 +20,7 @@ public class WalkInAppointment {
     private String patientFirstName;
     private String patientLastName;
     private Integer appointedDoctorId;
+    private Integer appointmentNumber;
     private String createdAt;
 
     private WalkInAppointment(WalkInAppointment other) {
@@ -27,6 +28,7 @@ public class WalkInAppointment {
         this.patientFirstName = other.patientFirstName;
         this.patientLastName = other.patientLastName;
         this.appointedDoctorId = other.appointedDoctorId;
+        this.appointmentNumber = other.appointmentNumber;
         this.createdAt = other.createdAt;
     }
 
@@ -63,6 +65,11 @@ public class WalkInAppointment {
 
     public WalkInAppointment patientFirstName(String patientFirstName) {
         this.patientFirstName = patientFirstName;
+        return this;
+    }
+
+    public WalkInAppointment appointmentNumber(Integer appointmentNumber) {
+        this.appointmentNumber = appointmentNumber;
         return this;
     }
 
@@ -110,6 +117,7 @@ public class WalkInAppointment {
             walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
             walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
             walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
+            walkInAppointment.setAppointmentNumber(resultSet.getInt("appointment_number"));
             walkInAppointment.setCreatedAt(resultSet.getString("created_at"));
             return walkInAppointment;
         }

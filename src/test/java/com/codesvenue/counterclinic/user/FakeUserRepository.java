@@ -25,19 +25,6 @@ public class FakeUserRepository implements UserRepository {
     }
 
     @Override
-    public WalkInAppointment createNewWalkInAppointment(WalkInAppointment walkInAppointment) {
-        WalkInAppointment newWalkInAppointment = new WalkInAppointment();
-        newWalkInAppointment.setAppointedDoctorId(walkInAppointment.getAppointedDoctorId());
-        newWalkInAppointment.setPatientFirstName(walkInAppointment.getPatientFirstName());
-        newWalkInAppointment.setPatientLastName(walkInAppointment.getPatientLastName());
-        newWalkInAppointment.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ISO_DATE_TIME)
-                .replace("T", " "));
-        newWalkInAppointment.setWalkInAppointmentId(1);
-        return newWalkInAppointment;
-    }
-
-    @Override
     public User findDoctorById(Integer doctorId) {
         ClinicRoom clinicRoom = new ClinicRoom();
         clinicRoom.setName("Clinic Room");

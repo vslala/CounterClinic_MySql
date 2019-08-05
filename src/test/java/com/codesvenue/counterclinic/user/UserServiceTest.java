@@ -92,49 +92,6 @@ public class UserServiceTest {
     }
 
     @Test
-    public void itShouldCreateNewAppointment() {
-        User receptionist = new User();
-        receptionist.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
-
-        WalkInAppointmentInfoForm walkInAppointmentInfoForm = WalkInAppointmentInfoForm.newInstance()
-                .appointedDoctorId(1)
-                .firstName("Anurag")
-                .lastName("Basu");
-
-        WalkInAppointment walkInAppointment = userService.createNewWalkInAppointment(receptionist, walkInAppointmentInfoForm);
-        Assert.assertNotNull(walkInAppointment);
-        Assert.assertNotNull(walkInAppointment.getWalkInAppointmentId());
-    }
-
-    @Test
-    public void itShouldCreateNewAppointmentWithQRCodeInOneTransaction() throws IOException {
-        // test preparation
-        File file = Paths.get("src/test/resources/static/qrcode").toFile();
-        FileUtils.deleteDirectory(file);
-
-        // Given
-        User receptionist = new User();
-        receptionist.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
-
-        WalkInAppointmentInfoForm walkInAppointmentInfoForm = WalkInAppointmentInfoForm.newInstance()
-                .appointedDoctorId(1)
-                .firstName("Anurag")
-                .lastName("Basu");
-
-        // When
-        WalkInAppointment walkInAppointment = userService.createNewWalkInAppointment(receptionist, walkInAppointmentInfoForm);
-
-        // Then
-        Assert.assertNotNull(walkInAppointment);
-        Assert.assertNotNull(walkInAppointment.getWalkInAppointmentId());
-        while (true) {
-            if (!Objects.isNull(file.listFiles()) && file.listFiles().length > 0)
-                break;
-        }
-        Assert.assertTrue(file.listFiles().length>0);
-    }
-
-    @Test
     public void doctorCallsNextPatient() {
         User doctor = new User();
         doctor.setRoles(Arrays.asList(UserRole.DOCTOR));

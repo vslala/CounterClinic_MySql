@@ -3,14 +3,20 @@ package com.codesvenue.counterclinic.walkinappointment.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @NoArgsConstructor
 @Data
 public class WalkInAppointmentInfoForm {
     @NotNull
+    @NotEmpty
+    @Size(min = 3, message = "First Name cannot be less than 3 characters.")
     private String patientFirstName;
     @NotNull
+    @NotEmpty
+    @Size(min = 3, message = "Last Name cannot be less than 3 characters.")
     private String patientLastName;
     private Integer doctorId;
     private Integer clinicId;

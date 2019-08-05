@@ -49,26 +49,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.createNewClinic(newClinic);
     }
 
-    @Value("${qrcode.folder.path}")
-    private String qrCodeFolder;
-
-    @Value("${qrcode.url.path}")
-    private String qrCodeUrlPath;
-
-    @Transactional
-    @Override
-    public WalkInAppointment createNewWalkInAppointment(User receptionist, WalkInAppointmentInfoForm walkInAppointmentInfoForm) {
-        WalkInAppointment walkInAppointment = receptionist.createWalkInAppointment(
-                walkInAppointmentInfoForm.getPatientFirstName(),
-                walkInAppointmentInfoForm.getPatientLastName(),
-                userRepository.findUserById(walkInAppointmentInfoForm.getDoctorId()));
-        WalkInAppointment newWalkInAppointment = userRepository.createNewWalkInAppointment(walkInAppointment);
-        QRCode qrCode = generateQRCode(newWalkInAppointment);
-        userRepository.createNewQRCode(qrCode);
-//        CompletableFuture.runAsync(()-> generateQRCode(newWalkInAppointment));
-        return newWalkInAppointment;
-    }
-
     @Override
     public WalkInAppointment notifyReceptionToSendNextPatient(User doctor, AppointmentStatus appointmentStatus) {
         doctor.askReceptionistToSendNextPatient(appointmentStatus, simpMessagingTemplate);
@@ -170,23 +150,4 @@ public class UserServiceImpl implements UserService {
         return userRepository.deleteSetting(settingId) > 0;
     }
 
-    private QRCode generateQRCode(final WalkInAppointment newWalkInAppointment) {
-        Map<String, Object> qrCodeData = new HashMap<>();
-        qrCodeData.put("appointmentId", newWalkInAppointment.getWalkInAppointmentId());
-        qrCodeData.put("appointedDoctorId", newWalkInAppointment.getAppointedDoctorId());
-        long now = System.currentTimeMillis();
-        String qrCodeFilePath = String.format("%s/%s.png", qrCodeFolder, now);
-        String url = String.format("%s/%s.png", qrCodeUrlPath, now);
-
-        QRCode qrCode = QRCodeBuilder.newInstance()
-                .filePath(qrCodeFilePath).url(url).build(
-                newWalkInAppointment.getWalkInAppointmentId(),
-                qrCodeData
-                );
-
-        log.info("QRCode Generated Successfully!");
-        log.info("QRCode Data: " + qrCodeData);
-        log.info("QRCode File Path: " + qrCodeFilePath);
-        return qrCode;
-    }
 }

@@ -71,4 +71,33 @@ public class AppointmentRepositoryMySqlTest {
         Assert.assertTrue(appointmentStatus.isPresent());
     }
 
+    @Test
+    public void itShouldCreateNewWalkInAppointmentIntoTheDatabase() {
+        WalkInAppointment walkInAppointment = new WalkInAppointment();
+        walkInAppointment.setAppointedDoctorId(2);
+        walkInAppointment.setPatientFirstName("Test Patient");
+        walkInAppointment.setPatientLastName("Test Patient");
+        walkInAppointment.setAppointmentNumber(1);
+        WalkInAppointment newAppointment = appointmentRepository.createNewWalkInAppointment(walkInAppointment);
+
+        Assert.assertNotNull(newAppointment);
+        Assert.assertNotNull(newAppointment.getWalkInAppointmentId());
+        Assert.assertNotNull(newAppointment.getAppointmentNumber());
+        Assert.assertTrue(newAppointment.getAppointmentNumber() > 0);
+    }
+
+    @Test
+    public void itShouldFetchTodaysLatestAppointmentStatusByDoctorId() {
+        Integer doctorId = 21;
+        Optional<AppointmentStatus> appointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorIdForToday(doctorId);
+        Assert.assertFalse(appointmentStatus.isPresent());
+    }
+
+    @Test
+    public void itShouldFetchAppointmentStatusListForToday() {
+        Integer doctorId = 21;
+        List<AppointmentStatus> appointmentStatuses = appointmentRepository.fetchAppointmentStatusListForToday(doctorId);
+        Assert.assertTrue(appointmentStatuses.isEmpty());
+    }
+
 }

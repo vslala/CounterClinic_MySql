@@ -47,22 +47,6 @@ public class UserRepositoryMySql implements UserRepository {
     }
 
     @Override
-    public WalkInAppointment createNewWalkInAppointment(WalkInAppointment walkInAppointment) {
-        final String sql = "INSERT INTO walkin_appointments (patient_first_name, patient_last_name, appointed_doctor_id, created_at) " +
-                "VALUES (:patientFirstName, :patientLastName, :appointedDoctorId, :createdAt)";
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("patientFirstName", walkInAppointment.getPatientFirstName())
-                .addValue("patientLastName", walkInAppointment.getPatientLastName())
-                .addValue("appointedDoctorId", walkInAppointment.getAppointedDoctorId())
-                .addValue("createdAt", LocalDateTime.now(ZoneOffset.UTC)
-                        .format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, params, keyHolder);
-        return WalkInAppointment.copyInstance(walkInAppointment)
-                .walkInAppointmentId(keyHolder.getKey().intValue());
-    }
-
-    @Override
     public User findDoctorById(Integer doctorId) {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at,\n" +
                 "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :userRole AND t2.user_id = :userId) as user_roles,\n" +
@@ -208,7 +192,7 @@ public class UserRepositoryMySql implements UserRepository {
                 "       SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role " +
                 "       FROM user_roles t2 WHERE t2.user_id = t1.user_id " +
                 "   ) as user_roles,\n" +
-                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room') as assigned_clinic_room,\n" +
+                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.user_id) as assigned_clinic_room,\n" +
                 " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
                 "FROM users t1 WHERE user_id = :userId";
         SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);

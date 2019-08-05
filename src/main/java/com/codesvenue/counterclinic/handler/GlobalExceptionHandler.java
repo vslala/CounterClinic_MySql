@@ -1,6 +1,7 @@
 package com.codesvenue.counterclinic.handler;
 
 import aj.org.objectweb.asm.Handle;
+import com.codesvenue.counterclinic.user.controller.InputValidationException;
 import com.codesvenue.counterclinic.walkinappointment.service.EmptyWalkInAppointmentException;
 import com.codesvenue.counterclinic.walkinappointment.service.NoMoreAppointmentsLeftForTheDayException;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,21 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InputValidationException.class)
+    public ResponseEntity<HandlerResponse> handleInputValidationException(InputValidationException e) {
+        StringBuilder errorMessage = new StringBuilder()
+                .append(e.getMessage());
+        e.getFieldErrors().forEach(msg ->
+            errorMessage.append(" ")
+                    .append(msg.getDefaultMessage()).append("\r\n")
+        );
+
+        HandlerResponse handlerResponse = new HandlerResponse();
+        handlerResponse.setErrorCode("4000");
+        handlerResponse.setMessage(errorMessage.toString());
+        return ResponseEntity.badRequest().body(handlerResponse);
+    }
 
     @ExceptionHandler(EmptyWalkInAppointmentException.class)
     public ResponseEntity<HandlerResponse> handleEmptyWalkInAppointment() {

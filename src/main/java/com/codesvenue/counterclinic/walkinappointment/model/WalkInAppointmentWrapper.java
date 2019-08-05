@@ -58,37 +58,11 @@ public class WalkInAppointmentWrapper {
 
         @Override
         public WalkInAppointmentWrapper mapRow(ResultSet resultSet, int i) throws SQLException {
-            User appointedDoctor = User.newInstance()
-                    .userId(resultSet.getInt("user_id"))
-                    .firstName(resultSet.getString("first_name"))
-                    .lastName(resultSet.getString("last_name"))
-                    .email(resultSet.getString("email"))
-                    .mobile(resultSet.getString("mobile"))
-                    .username(resultSet.getString("username"))
-                    .roles(User.convertRoleToUserRoleEnum(resultSet.getString("user_roles").split(",")))
-                    .preferredLanguage(PreferredLanguage.valueOf(resultSet.getString("preferred_language")))
-                    .assignClinicRoomId(resultSet.getInt("assigned_clinic_room"));
+            User appointedDoctor = User.UserRowMapper.newInstance().mapRow(resultSet, i);
 
-            WalkInAppointment walkInAppointment = new WalkInAppointment();
-            walkInAppointment.setWalkInAppointmentId(resultSet.getInt("walkin_appointment_id"));
-            walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
-            walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
-            walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
-            walkInAppointment.setCreatedAt(resultSet.getString("created_at"));
+            WalkInAppointment walkInAppointment = WalkInAppointment.WalkInAppointmentRowMapper.newInstance().mapRow(resultSet, i);
 
-            QRCode qrCode = new QRCode();
-            qrCode.setQrCodeId(resultSet.getInt("qrcode_id"));
-            qrCode.setAppointmentId(resultSet.getInt("walkin_appointment_id"));
-            qrCode.setQrCodeHeight(resultSet.getInt("height"));
-            qrCode.setQrCodeWidth(resultSet.getInt("width"));
-            qrCode.setQrCodeName(resultSet.getString("image_name"));
-            qrCode.setQrCodeFilePath(resultSet.getString("image_file_path"));
-            qrCode.setQrCodeUrlPath(resultSet.getString("image_url_path"));
-            try {
-                qrCode.setQrCodeData(new ObjectMapper().readValue(resultSet.getString("qrcode_data"), Map.class));
-            } catch (IOException e) {
-                log.error("Error converting json to object.", e);
-            }
+            QRCode qrCode = QRCode.QRCodeRowMapper.newInstance().mapRow(resultSet, i);
 
             return WalkInAppointmentWrapper.newInstance()
                     .walkInAppointment(walkInAppointment)

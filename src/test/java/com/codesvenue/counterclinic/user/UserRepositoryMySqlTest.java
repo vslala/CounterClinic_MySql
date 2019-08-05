@@ -82,18 +82,6 @@ public class UserRepositoryMySqlTest {
     }
 
     @Test
-    public void itShouldCreateNewWalkInAppointment() {
-        WalkInAppointment walkInAppointment = new WalkInAppointment();
-        walkInAppointment.setAppointedDoctorId(2);
-        walkInAppointment.setPatientFirstName("Test Patient");
-        walkInAppointment.setPatientLastName("Test Patient");
-        WalkInAppointment newAppointment = userRepository.createNewWalkInAppointment(walkInAppointment);
-
-        Assert.assertNotNull(newAppointment);
-        Assert.assertNotNull(newAppointment.getWalkInAppointmentId());
-    }
-
-    @Test
     public void shouldFindAppointmentWithId() {
         WalkInAppointment walkInAppointment = userRepository.findAppointmentById(1);
         Assert.assertNotNull(walkInAppointment);

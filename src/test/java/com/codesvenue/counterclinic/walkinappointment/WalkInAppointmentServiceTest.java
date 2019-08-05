@@ -1,14 +1,19 @@
 package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.user.dao.UserRepository;
+import com.codesvenue.counterclinic.user.dao.UserRepositoryMySql;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserRole;
+import com.codesvenue.counterclinic.user.service.UserService;
+import com.codesvenue.counterclinic.user.service.UserServiceImpl;
 import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepository;
 import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepositoryMySql;
 import com.codesvenue.counterclinic.walkinappointment.model.*;
 import com.codesvenue.counterclinic.walkinappointment.service.EmptyWalkInAppointmentException;
 import com.codesvenue.counterclinic.walkinappointment.service.WalkInAppointmentService;
 import com.codesvenue.counterclinic.walkinappointment.service.WalkInAppointmentServiceImpl;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,10 +21,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class WalkInAppointmentServiceTest {
 
@@ -154,5 +165,65 @@ public class WalkInAppointmentServiceTest {
         AppointmentStatus appointmentStatus = walkInAppointmentService.doctorTakesBreak(user, breakDuration);
         Assert.assertNotNull(appointmentStatus);
         Assert.assertEquals(23, appointmentStatus.getDoctorBreakDuration().intValue());
+    }
+
+    @Test
+    public void itShouldCreateNewWalkInAppointmentInTheDatabase() {
+        UserRepository userRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
+
+        ReflectionTestUtils.setField(walkInAppointmentService, "userRepository", userRepository);
+
+        User receptionist = TestData.getNewUser(UserRole.RECEPTIONIST);
+
+        WalkInAppointmentInfoForm walkInAppointmentInfoForm = new WalkInAppointmentInfoForm();
+        walkInAppointmentInfoForm.setPatientFirstName("Kanishka");
+        walkInAppointmentInfoForm.setPatientLastName("Kanhiya");
+        walkInAppointmentInfoForm.setClinicId(1);
+        walkInAppointmentInfoForm.setDoctorId(21);
+
+        QRCode.Generator generator = new QRCode.Generator();
+        generator.setQRCodeFolder("src/main/resources/static/qrcode");
+        generator.setQRCodeUrlPath("qrcode");
+
+        WalkInAppointment walkInAppointment = walkInAppointmentService.createNewWalkInAppointment(receptionist, walkInAppointmentInfoForm );
+        Assert.assertNotNull(walkInAppointment);
+        Assert.assertNotNull(walkInAppointment.getWalkInAppointmentId());
+        Assert.assertNotNull(walkInAppointment.getAppointmentNumber());
+        Assert.assertTrue(walkInAppointment.getAppointmentNumber() > 0);
+    }
+
+    @Test
+    public void itShouldCreateNewAppointmentWithQRCodeInOneTransaction() throws IOException {
+        // test preparation
+        File file = Paths.get("src/test/resources/static/qrcode").toFile();
+        FileUtils.deleteDirectory(file);
+
+        // Given
+        UserRepository userRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
+        ReflectionTestUtils.setField(walkInAppointmentService, "userRepository", userRepository);
+
+        User receptionist = new User();
+        receptionist.setRoles(Arrays.asList(UserRole.RECEPTIONIST));
+
+        QRCode.Generator generator = new QRCode.Generator();
+        generator.setQRCodeFolder("src/main/resources/static/qrcode");
+        generator.setQRCodeUrlPath("qrcode");
+
+        WalkInAppointmentInfoForm walkInAppointmentInfoForm = WalkInAppointmentInfoForm.newInstance()
+                .appointedDoctorId(21)
+                .firstName("Anurag")
+                .lastName("Basu");
+
+        // When
+        WalkInAppointment walkInAppointment = walkInAppointmentService.createNewWalkInAppointment(receptionist, walkInAppointmentInfoForm);
+
+        // Then
+        Assert.assertNotNull(walkInAppointment);
+        Assert.assertNotNull(walkInAppointment.getWalkInAppointmentId());
+        while (true) {
+            if (!Objects.isNull(file.listFiles()) && file.listFiles().length > 0)
+                break;
+        }
+        Assert.assertTrue(file.listFiles().length>0);
     }
 }

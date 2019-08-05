@@ -191,6 +191,7 @@ public class User {
                 (this.roles.contains(UserRole.RECEPTIONIST) || this.roles.contains(UserRole.SUPER_ADMIN));
     }
 
+    @Deprecated
     public WalkInAppointment createWalkInAppointment(String patientFirstName, String patientLastName, User appointedDoctor) {
         if (isReceptionist())
             return new WalkInAppointment().create(patientFirstName, patientLastName, appointedDoctor);
@@ -280,6 +281,12 @@ public class User {
             throw new FileUploadFailedException(errorMessage);
         }
         return null;
+    }
+
+    public WalkInAppointment createWalkInAppointment(String patientFirstName, String patientLastName, User appointedDoctor, List<WalkInAppointment> doctorAppointmentsForToday) {
+        if (isReceptionist())
+            return new WalkInAppointment().create(patientFirstName, patientLastName, appointedDoctor).appointmentNumber(doctorAppointmentsForToday.size()+1);
+        throw new ActionNotAllowedException("Only receptionists are allowed to create Walk In Appointments for patients");
     }
 
     public static class UserRowMapper implements RowMapper<User> {
