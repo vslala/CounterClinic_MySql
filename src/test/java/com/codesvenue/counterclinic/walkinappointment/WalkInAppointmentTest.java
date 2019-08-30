@@ -52,6 +52,8 @@ public class WalkInAppointmentTest {
 
     @Test
     public void itShouldCreateNewAppointment() {
+        appointedDoctor.setClinicRoomId(1);
+
         WalkInAppointment newWalkInAppointment = walkInAppointment.create(firstName, lastName, appointedDoctor);
         System.out.println(newWalkInAppointment.getCreatedAt());
 

@@ -35,8 +35,11 @@ public class WalkInAppointmentWithAttachment {
             walkInAppointment.setPatientFirstName(resultSet.getString("patient_first_name"));
             walkInAppointment.setPatientLastName(resultSet.getString("patient_last_name"));
             walkInAppointment.setAppointedDoctorId(resultSet.getInt("appointed_doctor_id"));
+            walkInAppointment.setAppointmentNumber(resultSet.getInt("appointment_number"));
             walkInAppointment.setCreatedAt(resultSet.getString("created_at"));
             walkInAppointmentWithAttachment.setWalkInAppointment(walkInAppointment);
+
+            log.debug("WalkInAppointment: " + walkInAppointment);
 
             QRCode qrCode = new QRCode();
             qrCode.setQrCodeId(resultSet.getInt("qrcode_id"));
@@ -46,8 +49,10 @@ public class WalkInAppointmentWithAttachment {
             qrCode.setQrCodeName(resultSet.getString("image_name"));
             qrCode.setQrCodeFilePath(resultSet.getString("image_file_path"));
             qrCode.setQrCodeUrlPath(resultSet.getString("image_url_path"));
+            log.debug("QRCode: " + qrCode);
             try {
-                qrCode.setQrCodeData(new ObjectMapper().readValue(resultSet.getString("qrcode_data"), Map.class));
+                qrCode.setQrCodeData(new ObjectMapper().readValue(
+                        resultSet.getString("qrcode_data"), Map.class));
             } catch (IOException e) {
                 log.error("Error converting json to object.", e);
             }

@@ -29,14 +29,11 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final String SELECT_USER_ROLE_AND_ASSIGNED_CLINIC = "(SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.appointed_doctor_id AND user_id = t1.appointed_doctor_id ) as user_roles";
-    private final String SELECT_ASSIGNED_CLINIC_ROOM = "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.appointed_doctor_id) as assigned_clinic_room";
-
     @Override
     public List<WalkInAppointment> fetchDoctorAppointmentsForToday(Integer doctorId) {
         final String sql = "SELECT t1.walkin_appointment_id, t1.patient_first_name, t1.patient_last_name, t1.appointed_doctor_id, t1.appointment_number, t1.created_at \n" +
                 "FROM walkin_appointments t1 \n" +
-                "WHERE t1.appointed_doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE";
+                "WHERE t1.appointed_doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE";
         SqlParameterSource params = new MapSqlParameterSource().addValue("doctorId", doctorId);
         return jdbcTemplate.query(sql, params, WalkInAppointment.WalkInAppointmentRowMapper.newInstance());
     }
@@ -44,7 +41,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     @Override
     public List<AppointmentStatus> fetchAppointmentStatusList(Integer doctorId) {
         final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
-                "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments\n" +
+                "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE) as total_appointments\n" +
                 "FROM walkin_appointment_status t1\n" +
                 "WHERE t1.doctor_id=:doctorId\n" +
                 "ORDER BY t1.walkin_appointment_status_id DESC\n";
@@ -55,10 +52,10 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     @Override
     public List<AppointmentStatus> fetchAppointmentStatusListForToday(Integer doctorId) {
         final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
-                "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments\n" +
+                "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE) as total_appointments\n" +
                 "FROM walkin_appointment_status t1\n" +
                 "WHERE t1.doctor_id=:doctorId\n" +
-                "AND SUBSTRING_INDEX(appointment_start_datetime, ' ', 1) = CURRENT_DATE \n" +
+                "AND SUBSTRING(appointment_start_datetime, 0, 11) = CURRENT_DATE \n" +
                 "ORDER BY t1.walkin_appointment_status_id DESC\n";
         SqlParameterSource params = new MapSqlParameterSource().addValue("doctorId", doctorId);
         return jdbcTemplate.query(sql, params, AppointmentStatus.AppointmentStatusRowMapper.newInstance());
@@ -92,7 +89,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
         return AppointmentStatus.copyInstance(appointmentStatus)
-                .appointmentStatusId(keyHolder.getKey().intValue())
+                .appointmentStatusId((int)keyHolder.getKeys().get("WALKIN_APPOINTMENT_STATUS_ID"))
                 .totalAppointments(appointmentStatus.getTotalAppointments());
     }
 
@@ -123,7 +120,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
 
     @Override
     public QRCode fetchQrCodeAttachment(int appointmentId) {
-        final String sql = "SELECT qrcode_id, appointment_id, height, width, image_name, image_file_path, image_url_path, qrcode_data, created_at FROM `qrcode_attachments` WHERE appointment_id = :appointmentId";
+        final String sql = "SELECT qrcode_id, appointment_id, height, width, image_name, image_file_path, image_url_path, qrcode_data, created_at FROM qrcode_attachments WHERE appointment_id = :appointmentId";
         SqlParameterSource params = new MapSqlParameterSource().addValue("appointmentId", appointmentId);
         return jdbcTemplate.queryForObject(sql, params, QRCode.QRCodeRowMapper.newInstance());
     }
@@ -131,7 +128,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     @Override
     public List<WalkInAppointmentWithAttachment> fetchAllWalkInAppointmentsWithAttachments() {
         final String sql = "SELECT t1.walkin_appointment_id, t1.patient_first_name, t1.patient_last_name, t1.appointed_doctor_id, t1.appointment_number, t1.created_at, t2.qrcode_id, t2.height, t2.width, t2.image_name, t2.image_file_path, t2.image_url_path, t2.qrcode_data\n" +
-                "FROM `walkin_appointments` t1 \n" +
+                "FROM walkin_appointments t1 \n" +
                 "LEFT JOIN qrcode_attachments t2\n" +
                 "ON t2.appointment_id = t1.walkin_appointment_id\n" +
                 "ORDER BY t1.created_at DESC\n";
@@ -142,8 +139,8 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     public WalkInAppointmentWrapper findWalkInAppointmentById(int appointmentId) {
 
         final String sql = "SELECT t1.walkin_appointment_id, t1.walkin_appointment_id as appointment_id, t1.walkin_appointment_id, t1.patient_first_name, t1.patient_last_name, t1.appointed_doctor_id, t1.appointment_number, t1.created_at, t2.user_id, t2.first_name, t2.last_name, t2.email, t2.mobile, t2.username, t2.preferred_language, t3.qrcode_id, t3.height, t3.width, t3.image_name, t3.image_file_path, t3.image_url_path, t3.qrcode_data,\n" +
-                " " + SELECT_USER_ROLE_AND_ASSIGNED_CLINIC + "," +
-                " " + SELECT_ASSIGNED_CLINIC_ROOM + "\n " +
+                "(SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.appointed_doctor_id AND user_id = t1.appointed_doctor_id ) as user_roles" + "," +
+                "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.appointed_doctor_id) as assigned_clinic_room" + "\n " +
                 "FROM walkin_appointments t1\n" +
                 "LEFT JOIN users t2\n" +
                 "ON t1.appointed_doctor_id = t2.user_id\n" +
@@ -158,7 +155,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorId(Integer userId) {
         try {
             final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
-                    "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments,\n" +
+                    "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE) as total_appointments,\n" +
                     "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.doctor_id) as assigned_clinic_room \n" +
                     "FROM walkin_appointment_status t1\n" +
                     "WHERE t1.doctor_id=:doctorId\n" +
@@ -175,11 +172,11 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
     public Optional<AppointmentStatus> findLatestAppointmentStatusByDoctorIdForToday(Integer doctorId) {
         try {
             final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
-                    "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING_INDEX(created_at, ' ', 1) = CURRENT_DATE) as total_appointments,\n" +
+                    "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE) as total_appointments,\n" +
                     "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.doctor_id) as assigned_clinic_room \n" +
                     "FROM walkin_appointment_status t1\n" +
                     "WHERE t1.doctor_id=:doctorId\n " +
-                    "AND SUBSTRING_INDEX(appointment_start_datetime, ' ', 1) = CURRENT_DATE \n" +
+                    "AND SUBSTRING(appointment_start_datetime, 0, 11) = CURRENT_DATE \n" +
                     "ORDER BY t1.walkin_appointment_status_id DESC\n" +
                     "LIMIT 1";
             MapSqlParameterSource params = new MapSqlParameterSource().addValue("doctorId", doctorId);

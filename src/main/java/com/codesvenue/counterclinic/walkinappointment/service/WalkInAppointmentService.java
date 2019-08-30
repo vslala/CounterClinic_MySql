@@ -1,6 +1,7 @@
 package com.codesvenue.counterclinic.walkinappointment.service;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
+import com.codesvenue.counterclinic.user.dao.UserRepository;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.service.UserService;
 import com.codesvenue.counterclinic.walkinappointment.model.*;
@@ -35,4 +36,6 @@ public interface WalkInAppointmentService {
     WalkInAppointment createNewWalkInAppointment(User loggedInUser, WalkInAppointmentInfoForm walkInAppointmentInfoForm);
 
     AppointmentStatus getLatestAppointmentStatus(User userId, String day);
+
+    void setUserRepository(UserRepository userRepository);
 }

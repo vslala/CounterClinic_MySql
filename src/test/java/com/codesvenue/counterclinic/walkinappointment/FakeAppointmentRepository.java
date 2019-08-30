@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Repository
 @Log4j
 public class FakeAppointmentRepository implements AppointmentRepository {
     @Override

@@ -1,7 +1,6 @@
 package com.codesvenue.counterclinic.walkinappointment.model;
 
 import com.codesvenue.counterclinic.configuration.DateTimeConstants;
-import com.codesvenue.counterclinic.walkinappointment.dao.NoMoreAppointmentsException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;

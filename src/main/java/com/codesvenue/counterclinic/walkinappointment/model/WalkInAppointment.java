@@ -1,6 +1,7 @@
 package com.codesvenue.counterclinic.walkinappointment.model;
 
 import com.codesvenue.counterclinic.clinic.model.ClinicRoomNotAssignedToDoctorException;
+import com.codesvenue.counterclinic.configuration.DateTimeConstants;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import lombok.Data;
@@ -9,6 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,7 +48,8 @@ public class WalkInAppointment {
         return WalkInAppointment.newInstance()
             .patientFirstName(patientFirstName)
             .patientLastName(patientLastName)
-            .appointedDoctor(appointedDoctor.getUserId());
+            .appointedDoctor(appointedDoctor.getUserId())
+                .createdAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DateTimeConstants.MYSQL_DATETIME_PATTERN)));
     }
 
     public WalkInAppointment createdAt(String dateTime) {

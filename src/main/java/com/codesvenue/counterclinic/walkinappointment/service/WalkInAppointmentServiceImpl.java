@@ -42,7 +42,7 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
 
         if (appointmentStatusList.isEmpty()) {
             // doctor has not started taking patients
-            return AppointmentStatus.newInstanceForFirstTime(appointmentId, doctorId, patientsBeforeThisAppointmentId, LocalDateTime.now(ZoneOffset.UTC));
+            return AppointmentStatus.newInstanceForFirstTime(appointmentId, doctorId, patientsBeforeThisAppointmentId, LocalDateTime.now());
         }
 
         AppointmentStatus latestAppointmentStatus = appointmentStatusList.get(FIRST);
@@ -57,7 +57,7 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
 
         WalkInAppointment nextWalkInAppointment = getNextAppointment(user);
         Optional<AppointmentStatus> latestAppointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorIdForToday(user.getUserId());
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now();
         AppointmentStatus newAppointmentStatus = null;
         if (latestAppointmentStatus.isPresent()) {
             newAppointmentStatus = latestAppointmentStatus.get().generateAppointmentStatus(nextWalkInAppointment, now);
@@ -182,6 +182,7 @@ public class WalkInAppointmentServiceImpl implements WalkInAppointmentService {
         return newWalkInAppointment;
     }
 
+    @Override
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
