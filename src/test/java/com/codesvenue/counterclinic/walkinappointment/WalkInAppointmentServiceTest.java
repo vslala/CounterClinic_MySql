@@ -33,6 +33,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -156,7 +157,15 @@ public class WalkInAppointmentServiceTest {
 
     @Test
     public void itShouldGetQRCodeByAppointmentId() {
+        // Arrange
+        AppointmentRepository mockRepository = mock(AppointmentRepository.class);
+        when(mockRepository.fetchQrCodeAttachment(1)).thenReturn(new QRCode());
+        walkInAppointmentService = new WalkInAppointmentServiceImpl(mockRepository, simpMessagingTemplate);
+
+        // Act
         QRCode qrCode = walkInAppointmentService.getQrCodeForAppointment(1);
+
+        // Asserts
         Assert.assertNotNull(qrCode);
     }
 
@@ -220,9 +229,22 @@ public class WalkInAppointmentServiceTest {
 
     @Test
     public void itShouldInsertANewAppointmentStatusWhenDoctorTakesABreak() {
+        // Arrange
         User user = User.newInstance().userId(1).roles(UserRole.DOCTOR);
         int breakDuration = 23;
+        AppointmentRepository mockedAppointmentRepository = mock(AppointmentRepository.class);
+        SimpMessagingTemplate mockedSimpMessagingTemplate = mock(SimpMessagingTemplate.class);
+        AppointmentStatus fakeAppointmentStatus = new AppointmentStatus();
+        fakeAppointmentStatus.setDoctorBreakDuration(23);
+        when(mockedAppointmentRepository.findLatestAppointmentStatusByDoctorIdForToday(user.getUserId()))
+                .thenReturn(Optional.of(fakeAppointmentStatus));
+        when(mockedAppointmentRepository.saveAppointmentStatus(any())).thenReturn(fakeAppointmentStatus);
+        walkInAppointmentService = new WalkInAppointmentServiceImpl(mockedAppointmentRepository, mockedSimpMessagingTemplate);
+
+        // Act
         AppointmentStatus appointmentStatus = walkInAppointmentService.doctorTakesBreak(user, breakDuration);
+
+        // Asserts
         Assert.assertNotNull(appointmentStatus);
         Assert.assertEquals(23, appointmentStatus.getDoctorBreakDuration().intValue());
     }

@@ -19,35 +19,48 @@ import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInf
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class UserServiceTest {
 
+    @Autowired
     private UserService userService;
 
     @Before
     public void setup(){
-        Mockito mock = new Mockito();
-        UserRepository userRepository = new FakeUserRepository();
-        UserRepository origUserRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
-        SimpMessagingTemplate simpMessagingTemplate =  mock.mock(SimpMessagingTemplate.class);
-        userService = new UserServiceImpl(origUserRepository, simpMessagingTemplate);
-        ReflectionTestUtils.setField(userService, "qrCodeFolder", "src/test/resources/static/qrcode");
-        ReflectionTestUtils.setField(userService, "qrCodeUrlPath", "qrcode");
+//        Mockito mock = new Mockito();
+//        UserRepository userRepository = new FakeUserRepository();
+//        UserRepository origUserRepository = new UserRepositoryMySql(TestData.getNamedParameterJdbcTemplate());
+//        SimpMessagingTemplate simpMessagingTemplate =  mock.mock(SimpMessagingTemplate.class);
+//        userService = new UserServiceImpl(origUserRepository, simpMessagingTemplate);
+//        ReflectionTestUtils.setField(userService, "qrCodeFolder", "src/test/resources/static/qrcode");
+//        ReflectionTestUtils.setField(userService, "qrCodeUrlPath", "qrcode");
     }
 
+    @Ignore("Not part of walkin api anymore. Moved to Online Api")
     @Test
     public void itShouldRegisterNewUser() {
         User user = User.newInstance().firstName("Sachin").lastName("Tendulkar")
@@ -62,7 +75,7 @@ public class UserServiceTest {
 
     @Test
     public void itShouldCascadeDeleteUser() {
-        Integer userId = 8;
+        Integer userId = 1;
         boolean rowsAffected = userService.deleteUser(userId);
         Assert.assertTrue(rowsAffected);
     }
@@ -80,13 +93,17 @@ public class UserServiceTest {
 
     @Test
     public void itShouldAssignClinicRoomToDoctor() {
+        // Arrange
         User receptionist = TestData.getNewUser(UserRole.RECEPTIONIST);
-        Integer assignDoctorId = 1;
+        Integer assignDoctorId = userService.createNewUser(receptionist).getUserId();
+        ClinicForm clinicForm = new ClinicForm();
+        clinicForm.setClinicName("Test Clinic");
+        Integer clinicRoomId = userService.createNewClinic(TestData.getNewUser(UserRole.ADMIN), clinicForm).getClinicId();
 
-        Integer clinicRoomId = 3;
-
+        // Act
         User doctor = userService.assignDoctorClinic(receptionist, clinicRoomId, assignDoctorId);
 
+        // Asserts
         Assert.assertNotNull(doctor);
         Assert.assertNotNull(doctor.getClinicRoomId());
     }
@@ -96,7 +113,8 @@ public class UserServiceTest {
         User doctor = new User();
         doctor.setRoles(Arrays.asList(UserRole.DOCTOR));
         doctor.setClinicRoom(ClinicRoom.newInstance("X-RAY"));
-        AppointmentStatus appointmentStatus = new AppointmentStatus().appointmentStatusId(2);
+        AppointmentStatus appointmentStatus = new AppointmentStatus().appointmentStatusId(1);
+        appointmentStatus.setCurrentAppointmentId(1);
 
         WalkInAppointment nextAppointment = userService.notifyReceptionToSendNextPatient(doctor, appointmentStatus);
 
@@ -114,21 +132,44 @@ public class UserServiceTest {
 
     @Test
     public void itShouldFetchAllTheUserByRole() {
+        // Arrange
+        User user = TestData.getNewUser(UserRole.DOCTOR);
+        userService.createNewUser(user);
+
+        // Act
         List<User> doctors = userService.getAllUsers(UserRole.DOCTOR);
 
+        // Asserts
         Assert.assertNotNull(doctors);
         Assert.assertFalse(doctors.isEmpty());
     }
 
     @Test
     public void itShouldFetchUserById() {
-        User user = userService.getUser(1);
+        // Arrange
+        UserLogin userLogin = userService.createNewUser(TestData.getNewUser(UserRole.DOCTOR));
+
+        // Act
+        User user = userService.getUser(userLogin.getUserId());
+
+        // Asserts
         Assert.assertNotNull(user);
     }
 
     @Test
     public void itShouldGetAllUsers() {
+        // Arrange
+        UserRepository userRepository = mock(UserRepository.class);
+        SimpMessagingTemplate simpMessagingTemplate = mock(SimpMessagingTemplate.class);
+        userService = new UserServiceImpl(userRepository, simpMessagingTemplate);
+        List<User> userList = new ArrayList<>();
+        userList.add(TestData.getNewUser(UserRole.ADMIN));
+        when(userRepository.findAllUsers()).thenReturn(userList);
+
+        // Act
         List<User> users = userService.getAllUsers();
+
+        // Asserts
         Assert.assertFalse(users.isEmpty());
     }
 
@@ -144,31 +185,62 @@ public class UserServiceTest {
 
     @Test
     public void itShouldUploadFileAndStoreTheInfoIntoDatabaseSettingTable() throws IOException {
-        ReflectionTestUtils.setField(userService, "imagesFolder", "src/test/resources/images");
-        ReflectionTestUtils.setField(userService, "imagesUrlPath", "images");
+        // Arrange
+        String folderPath = "src/test/resources/static/images";
+        deleteDirectory(folderPath);
+        MockMultipartFile file = new MockMultipartFile("lala", "lala.jpg", "image/jpg", Files.readAllBytes(Paths.get("src/test/resources/lala.jpg")));
 
-        MockMultipartFile file = new MockMultipartFile("TestAttachmentType", Files.readAllBytes(Paths.get("src/test/resources/lala.jpg")));
+        // Act
         Setting uploadedFile = userService.uploadFile(file, "Test");
+
+        // Asserts
         Assert.assertNotNull(uploadedFile);
         Assert.assertEquals("Test", uploadedFile.getSettingName());
-        Assert.assertEquals("src/test/resources/images/lala.jpg", uploadedFile.getSettingValue());
+        Assert.assertEquals("images/lala.jpg", uploadedFile.getSettingValue());
+    }
+
+    private void deleteDirectory(String folderPath) {
+        File file = Paths.get(folderPath).toFile();
+        if (!file.isDirectory()) {
+            file.delete();
+            return;
+        }
+
+        for (File f : file.listFiles()) {
+            f.delete();
+        }
+        file.delete();
     }
 
     @Test
     public void itShouldSanitizeTheImageNameBeforeUploading() throws IOException {
+        // Arrange
+        String folderPath = "src/test/resources/static/images";
+        deleteDirectory(folderPath);
         String filePath = "src/test/resources/Your Life Has No Purpose, Or Does It_.png";
-        MockMultipartFile file = new MockMultipartFile("TestAttachmentType", Files.readAllBytes(Paths.get(filePath)));
-        Setting uploadedFile = userService.uploadFile(file, "TestFileNameSanitize");
+        MockMultipartFile file = new MockMultipartFile("TestAttachmentType", "Your Life Has No Purpose, Or Does It_.png", "image/png", Files.readAllBytes(Paths.get(filePath)));
+
+        // Act
+        Setting uploadedFile = userService.uploadFile(file, "TestAttachmentType");
+
+        // Asserts
         Assert.assertNotNull(uploadedFile);
-        Assert.assertEquals("Test", uploadedFile.getSettingName());
-        Assert.assertEquals("src/test/resources/images/YourLifeHasNoPurposeOrDoesIt_.png", uploadedFile.getSettingValue());
+        Assert.assertEquals("TestAttachmentType", uploadedFile.getSettingName());
+        Assert.assertEquals("images/YourLifeHasNoPurposeOrDoesIt.png", uploadedFile.getSettingValue());
     }
 
     @Test
     public void itShouldFetchSettingByName() {
-        Setting siteLogo = userService.getSetting("siteLogo");
-        Assert.assertNotNull(siteLogo);
-        Assert.assertEquals("siteLogo", siteLogo.getSettingName());
+        // Arrange
+        userService.updateSetting(new Setting("testSettingKey", "testSettingValue"));
+
+        // Act
+        Setting setting = userService.getSetting("testSettingKey");
+
+        // Asserts
+        Assert.assertNotNull(setting);
+        Assert.assertEquals("testSettingKey", setting.getSettingName());
+        Assert.assertEquals("testSettingValue", setting.getSettingValue());
     }
 
     @Test

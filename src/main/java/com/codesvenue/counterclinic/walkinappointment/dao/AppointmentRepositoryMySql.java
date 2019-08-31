@@ -173,7 +173,7 @@ public class AppointmentRepositoryMySql implements AppointmentRepository{
         try {
             final String sql = "SELECT t1.walkin_appointment_status_id, t1.current_appointment_id, t1.doctor_id, t1.avg_wait_time, t1.appointment_start_datetime, t1.doctor_break_duration, t1.patients_in_visited_queue, \n" +
                     "(SELECT COUNT(1) FROM walkin_appointments WHERE t1.doctor_id=:doctorId AND SUBSTRING(created_at, 0, 11) = CURRENT_DATE) as total_appointments,\n" +
-                    "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.doctor_id) as assigned_clinic_room \n" +
+                    "(SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.doctor_id LIMIT  1) as assigned_clinic_room \n" +
                     "FROM walkin_appointment_status t1\n" +
                     "WHERE t1.doctor_id=:doctorId\n " +
                     "AND SUBSTRING(appointment_start_datetime, 0, 11) = CURRENT_DATE \n" +

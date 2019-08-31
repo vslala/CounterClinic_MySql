@@ -12,6 +12,7 @@ import com.codesvenue.counterclinic.walkinappointment.TestData;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,7 @@ public class UserRepositoryMySqlTest {
         Assert.assertFalse(newUser.getUserId() == 0);
     }
 
+    @Ignore("This feature has been moved to counter clinic online API")
     @Test
     public void insertUserLoginDetailIntoTheDatabase() {
         UserLogin userLogin = new UserLogin(1, "vslala", "simplepass");
@@ -82,7 +84,16 @@ public class UserRepositoryMySqlTest {
 
     @Test
     public void shouldFindDoctorById() {
-        User doctor = userRepository.findDoctorById(1);
+        // Arrange
+        User userInfo = TestData.getNewUser(UserRole.DOCTOR);
+        userInfo.setUsername("pvrano");
+        User newDoctor = userRepository.createNewUser(userInfo);
+        userRepository.createUserRoles(newDoctor.getUserId(), UserRole.DOCTOR);
+
+        // Act
+        User doctor = userRepository.findDoctorById(newDoctor.getUserId());
+
+        // Asserts
         Assert.assertEquals(doctor.getUsername(), "pvrano");
         Assert.assertNotNull(doctor.getClinicRoomId());
         Assert.assertNotNull(doctor.getRoles());
@@ -115,7 +126,7 @@ public class UserRepositoryMySqlTest {
 
     @Test
     public void itShouldFindClinicRoomById() {
-        ClinicRoom clinicRoom = userRepository.findClinicRoomById(2);
+        ClinicRoom clinicRoom = userRepository.findClinicRoomById(1);
         Assert.assertNotNull(clinicRoom);
         Assert.assertNotNull(clinicRoom.getClinicRoomId());
     }
@@ -136,27 +147,63 @@ public class UserRepositoryMySqlTest {
 
     @Test
     public void itShouldCascadeDeleteUserFromDatabase() {
-        Integer userId = 7;
-        int rowsAffected = userRepository.deleteCascadeUser(userId);
+        // Arrange
+        User userInfo = TestData.getNewUser(UserRole.DOCTOR);
+        userInfo.setUsername("pvrano");
+        User newDoctor = userRepository.createNewUser(userInfo);
+        userRepository.createUserRoles(newDoctor.getUserId(), UserRole.DOCTOR);
+
+        // Act
+        int rowsAffected = userRepository.deleteCascadeUser(newDoctor.getUserId());
+
+        // Asserts
         Assert.assertTrue(rowsAffected > 0);
     }
 
     @Test
     public void itShouldFetchAllTheUsersByRole() {
+        // Arrange
+        User userInfo = TestData.getNewUser(UserRole.DOCTOR);
+        userInfo.setUsername("pvrano");
+        User newDoctor = userRepository.createNewUser(userInfo);
+        userRepository.createUserRoles(newDoctor.getUserId(), UserRole.DOCTOR);
+
+        // Act
         List<User> users = userRepository.findAllUsersByRole(UserRole.DOCTOR);
+
+        // Asserts
         Assert.assertNotNull(users);
         Assert.assertFalse(users.isEmpty());
     }
 
     @Test
     public void itShouldFetchUserByUserId() {
-        User user = userRepository.findUserById(1);
+        // Arrange
+        User userInfo = TestData.getNewUser(UserRole.DOCTOR);
+        userInfo.setUsername("pvrano");
+        User newDoctor = userRepository.createNewUser(userInfo);
+        userRepository.createUserRoles(newDoctor.getUserId(), UserRole.DOCTOR);
+
+        // Act
+        User user = userRepository.findUserById(newDoctor.getUserId());
+
+        // Asserts
         Assert.assertNotNull(user);
     }
 
+    @Ignore
     @Test
     public void itShouldFetchAllUsersFromTheDatabase() {
+        // Arrange
+        User userInfo = TestData.getNewUser(UserRole.DOCTOR);
+        userInfo.setUsername("pvrano");
+        User newDoctor = userRepository.createNewUser(userInfo);
+        userRepository.createUserRoles(newDoctor.getUserId(), UserRole.DOCTOR);
+
+        // Act
         List<User> users = userRepository.findAllUsers();
+
+        // Asserts
         Assert.assertNotNull(users);
         Assert.assertFalse(users.isEmpty());
     }

@@ -2,6 +2,7 @@ package com.codesvenue.counterclinic.walkinappointment;
 
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepository;
+import com.codesvenue.counterclinic.walkinappointment.dao.AppointmentRepositoryMySql;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentWithAttachment;
@@ -83,14 +84,21 @@ public class AppointmentRepositoryMySqlTest {
 
     @Test
     public void itShouldFetchLatestAppointmentStatus() {
+        appointmentRepository = new FakeAppointmentRepository();
         Optional<AppointmentStatus> appointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorId(1);
         Assert.assertTrue(appointmentStatus.isPresent());
     }
 
     @Test
     public void itShouldFetchTodaysLatestAppointmentStatusByDoctorId() {
+        // Arrange
         Integer doctorId = 1;
+        AppointmentRepository appointmentRepository = new FakeAppointmentRepository();
+
+        // Act
         Optional<AppointmentStatus> appointmentStatus = appointmentRepository.findLatestAppointmentStatusByDoctorIdForToday(doctorId);
+
+        // Asserts
         Assert.assertTrue(appointmentStatus.isPresent());
     }
 

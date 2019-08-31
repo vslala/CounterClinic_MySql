@@ -37,7 +37,7 @@ public class UserTest {
     @Test
     public void itShouldThrowActionNotAllowedExceptionIfTheUserIsNotSuperAdmin()  {
         expectedException.expect(ActionNotAllowedException.class);
-        user.setRoles(Arrays.asList(UserRole.ADMIN));
+        user.setRoles(Arrays.asList(UserRole.DOCTOR));
         String clinicName = "Counter Clinic";
         Clinic newClinic = user.createNewClinic(clinicName);
     }
@@ -104,7 +104,7 @@ public class UserTest {
         String patientLastName  = "Patient Last Name";
         User appointedDoctor = new User();
         appointedDoctor.setRoles(Arrays.asList(UserRole.DOCTOR));
-        appointedDoctor.setClinicRoom(ClinicRoom.newInstance("ClinicRoom"));
+        appointedDoctor.setClinicRoom(ClinicRoom.newInstance("ClinicRoom").clinicRoomId(1));
 
         WalkInAppointment walkInAppointment = user.createWalkInAppointment(patientFirstName, patientLastName, appointedDoctor);
         Assert.assertNotNull(walkInAppointment);
@@ -134,9 +134,15 @@ public class UserTest {
 
     @Test
     public void uploadDisplayImageToSystemFolder() throws IOException {
-        byte[] data = Files.readAllBytes(Paths.get("src/test/resources/testimage.png"));
-        File uploadedFile = user.uploadImage(data, "src/test/resources/images/testimage.png");
+        // Arrange
+        byte[] data = Files.readAllBytes(Paths.get("src/test/resources/lala.jpg"));
+        String uploadPath = "src/test/resources/images/lala.jpg";
+
+        // Act
+        File uploadedFile = user.uploadImage(data, uploadPath);
+
+        // Asserts
         Assert.assertNotNull(uploadedFile);
-        Assert.assertTrue(uploadedFile.getPath().contains("images/testimage"));
+        Assert.assertTrue(uploadedFile.getPath().equals(uploadPath));
     }
 }

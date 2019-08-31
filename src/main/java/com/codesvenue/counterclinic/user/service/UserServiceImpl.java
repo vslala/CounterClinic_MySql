@@ -84,6 +84,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserById(userId);
     }
 
+    @Deprecated
     @Transactional
     @Override
     public UserLogin createNewUser(User user) {

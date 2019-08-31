@@ -238,6 +238,7 @@ public class User {
     }
 
     public static UserRole[] convertRoleToUserRoleEnum(String[] roles) {
+        log.debug("Roles: " + roles);
         UserRole[] userRoles = new UserRole[roles.length];
         for(int index = 0; index < roles.length; index++)
             userRoles[index] = UserRole.valueOf(roles[index]);
@@ -280,7 +281,7 @@ public class User {
             log.error(errorMessage, e);
             throw new FileUploadFailedException(errorMessage);
         }
-        return null;
+        return file;
     }
 
     public WalkInAppointment createWalkInAppointment(String patientFirstName, String patientLastName, User appointedDoctor, List<WalkInAppointment> doctorAppointmentsForToday) {

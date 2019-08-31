@@ -49,7 +49,7 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public User findDoctorById(Integer doctorId) {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at,\n" +
-                "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :userRole AND t2.user_id = :userId) as user_roles,\n" +
+                "\t(SELECT GROUP_CONCAT(DISTINCT ur.role_name) FROM user_roles ur WHERE ur.user_id = :userId) as user_roles,\n" +
                 "\t(SELECT t2.meta_value FROM users_meta t2 WHERE t2.meta_key = :assignedClinicRoom AND t2.user_id = :userId) as assigned_clinic_room\n" +
                 "FROM users t1\n" +
                 "WHERE t1.user_id = :userId";
@@ -89,7 +89,7 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public WalkInAppointment findAppointmentById(Integer nextAppointmentId) {
         final String sql = "SELECT t1.walkin_appointment_id, t1.patient_first_name, t1.patient_last_name, " +
-                "t1.appointed_doctor_id, t1.created_at FROM `walkin_appointments` t1 " +
+                "t1.appointed_doctor_id, t1.appointment_number, t1.created_at FROM `walkin_appointments` t1 " +
                 "WHERE t1.walkin_appointment_id = :walkInAppointmentId";
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("walkInAppointmentId", nextAppointmentId);
@@ -114,8 +114,8 @@ public class UserRepositoryMySql implements UserRepository {
 
     @Override
     public User createNewUser(User user) {
-        final String sql = "INSERT INTO users (first_name, last_name, email, mobile, username, preferred_language, created_at) " +
-                "values (:firstName, :lastName, :email, :mobile, :username, :preferredLanguage, created_at)";
+        final String sql = "INSERT INTO `users` (`first_name`, `last_name`, `email`, `mobile`, `username`, `preferred_language`, `created_at`) " +
+                "values (:firstName, :lastName, :email, :mobile, :username, :preferredLanguage, :createdAt)";
         System.out.println("Preferred Language: "  + user.getPreferredLanguage());
         KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource params = new MapSqlParameterSource()
@@ -220,9 +220,18 @@ public class UserRepositoryMySql implements UserRepository {
     @Override
     public List<User> findAllUsers() {
         final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
+                "   ( " +
+                "       SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role " +
+                "       FROM user_roles t2 WHERE t2.user_id = t1.user_id " +
+                "   ) as user_roles,\n" +
                 " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.user_id) as assigned_clinic_room,\n" +
                 " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
-                " FROM users t1";
+                "FROM users t1";
+
+//        final String sql = "SELECT t1.user_id, t1.first_name, t1.last_name, t1.email, t1.mobile, t1.username, t1.preferred_language, t1.created_at, " +
+//                " (SELECT meta_value FROM users_meta WHERE meta_key = 'assigned_clinic_room' AND user_id = t1.user_id) as assigned_clinic_room,\n" +
+//                " ( SELECT GROUP_CONCAT(DISTINCT t2.role_name) as user_role FROM user_roles t2 WHERE t2.user_id = t1.user_id ) as user_roles\n" +
+//                " FROM users t1";
         return jdbcTemplate.query(sql, User.UserRowMapper.newInstance());
     }
 
@@ -258,7 +267,7 @@ public class UserRepositoryMySql implements UserRepository {
 
     @Override
     public Setting fetchSettingByName(String settingName) {
-        final String sql = "SELECT setting_id, setting_name, setting_value FROM settings WHERE setting_name = :settingName";
+        final String sql = "SELECT setting_id, setting_name, setting_value FROM settings WHERE setting_name = :settingName LIMIT 1";
         SqlParameterSource params = new MapSqlParameterSource().addValue("settingName", settingName);
         return jdbcTemplate.queryForObject(sql, params, Setting.SettingRowMapper.newInstance());
     }
