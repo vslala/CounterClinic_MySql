@@ -1,5 +1,7 @@
 #! /bin/bash
 
+ENV_FILE=$1
+
 IMAGE_NAME=vslala/counter_clinic_registry
 IMAGE_TAG=latest
 CONTAINER_NAME=counter-clinic-walkin
@@ -18,12 +20,18 @@ delete_image() {
 }
 
 build() {
+ git pull origin master
  mvn clean install
  sudo docker build --no-cache --tag "${IMAGE_NAME}:${IMAGE_TAG}" .
 }
 
 run_container() {
+ if [ -z "$ENV_FILE" ]
+ then
  sudo docker run -it -d -p8080:8080 --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
+ else
+ sudo docker run -it -d -p8080:8080 "${ENV_FILE}"  --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
+ fi
 }
 
 if [ -z "$IMAGES" ]
