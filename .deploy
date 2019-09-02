@@ -1,0 +1,44 @@
+#! /bin/bash
+
+IMAGE_NAME=vslala/counter_clinic_registry
+IMAGE_TAG=latest
+CONTAINER_NAME=counter-clinic-walkin
+
+IMAGES=`sudo docker images | grep "$IMAGE_NAME"`
+
+echo "IMAGE NAME: $IMAGE_NAME"
+echo "IMAGE TAG: $IMAGE_TAG"
+echo "LIST IMAGES: $IMAGES"
+
+
+delete_image() {
+ sudo docker container stop "$CONTAINER_NAME"
+ sudo docker rm container "$CONTAINER_NAME"
+ sudo docker rmi "${IMAGE_NAME}:${IMAGE_TAG}"
+}
+
+build() {
+ mvn clean install
+ sudo docker build --no-cache --tag "${IMAGE_NAME}:${IMAGE_TAG}" .
+}
+
+run_container() {
+ sudo docker run -it -d -p8080:8080 --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
+}
+
+if [ -z "$IMAGES" ]
+then
+echo "Image Not Found"
+build
+run_container
+else
+echo "Image Found"
+delete_image
+build
+run_container
+fi
+
+
+
+
+
