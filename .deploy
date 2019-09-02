@@ -30,7 +30,7 @@ run_container() {
  then
  sudo docker run -it -d -p8080:8080 --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
  else
- sudo docker run -it -d -p8080:8080 "${ENV_FILE}"  --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
+ sudo docker run -it -d -p8080:8080 --env-file="${ENV_FILE}"  --name "${CONTAINER_NAME}" "${IMAGE_NAME}:${IMAGE_TAG}"
  fi
 }
 
