@@ -49,7 +49,7 @@ CREATE TABLE `users` (
     `email` VARCHAR(255) NOT NULL ,
     `mobile` VARCHAR(12) NOT NULL ,
     `username` VARCHAR(55) NOT NULL ,
-    `password` VARCHAR(255) NOT NULL ,
+--     `password` VARCHAR(255) NOT NULL ,
     `preferred_language` VARCHAR(25) NOT NULL ,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`user_id`)
