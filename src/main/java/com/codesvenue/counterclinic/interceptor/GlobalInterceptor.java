@@ -39,8 +39,7 @@ public class GlobalInterceptor implements HandlerInterceptor, WebMvcConfigurer {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = request.getHeader(AUTHORIZATION_HEADER);
-        System.out.println("Access Token: " + accessToken);
-
+        log.debug("Access Token: " + accessToken);
         if (!Objects.isNull(accessToken)) {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET.getBytes()))
                     .withIssuer(issuer).build();
