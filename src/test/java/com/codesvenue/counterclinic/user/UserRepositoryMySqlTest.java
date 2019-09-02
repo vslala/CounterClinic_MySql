@@ -223,7 +223,6 @@ public class UserRepositoryMySqlTest {
         Setting setting = new Setting("TestSetting", "TestValue");
         Setting newSetting = userRepository.upsertSetting("TestSetting", "TestValue2");
         Assert.assertEquals("TestSetting", newSetting.getSettingName());
-        Assert.assertNotNull(newSetting.getSettingId());
     }
 
     @Test
