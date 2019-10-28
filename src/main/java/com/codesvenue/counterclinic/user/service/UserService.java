@@ -3,6 +3,8 @@ package com.codesvenue.counterclinic.user.service;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.login.model.LoginCredentials;
+import com.codesvenue.counterclinic.login.model.LoginResponse;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
@@ -54,4 +56,6 @@ public interface UserService {
     Setting updateSetting(Setting setting);
 
     Boolean deleteSetting(Integer settingId);
+
+    LoginResponse loginUser(LoginCredentials loginCredentials);
 }

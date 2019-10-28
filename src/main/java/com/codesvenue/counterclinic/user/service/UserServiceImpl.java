@@ -4,6 +4,8 @@ import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
 import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.login.model.LoginCredentials;
+import com.codesvenue.counterclinic.login.model.LoginResponse;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
 import com.codesvenue.counterclinic.user.FileUploadFailedException;
@@ -149,6 +151,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean deleteSetting(Integer settingId) {
         return userRepository.deleteSetting(settingId) > 0;
+    }
+
+    @Override
+    public LoginResponse loginUser(LoginCredentials loginCredentials) {
+        return null;
     }
 
 }

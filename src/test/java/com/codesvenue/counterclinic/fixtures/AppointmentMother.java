@@ -1,5 +1,8 @@
 package com.codesvenue.counterclinic.fixtures;
 
+import com.codesvenue.counterclinic.login.model.LoginCredentials;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -88,5 +91,14 @@ public class AppointmentMother {
         input.put("doctor_id", String.valueOf(DOCTOR_ID));
         input.put("appointment_date", APPOINTMENT_DATE.toString());
         return input;
+    }
+
+    public static byte[] asJsonString(LoginCredentials loginCredentials) {
+        try {
+            return new ObjectMapper().writeValueAsBytes(loginCredentials);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 }
