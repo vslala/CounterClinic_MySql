@@ -1,20 +1,13 @@
 package com.codesvenue.counterclinic.user.controller;
 
-import com.codesvenue.counterclinic.clinic.model.Setting;
-import com.codesvenue.counterclinic.user.UserConstants;
+import com.codesvenue.counterclinic.setting.model.Setting;
 import com.codesvenue.counterclinic.user.model.User;
 import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.user.service.UserService;
-import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
-import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
-import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.Value;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

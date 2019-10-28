@@ -93,9 +93,9 @@ public class AppointmentMother {
         return input;
     }
 
-    public static byte[] asJsonString(LoginCredentials loginCredentials) {
+    public static byte[] asJsonString(Object obj) {
         try {
-            return new ObjectMapper().writeValueAsBytes(loginCredentials);
+            return new ObjectMapper().writeValueAsBytes(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException();

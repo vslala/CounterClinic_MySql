@@ -3,11 +3,9 @@ package com.codesvenue.counterclinic.user.service;
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
-import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.setting.model.Setting;
 import com.codesvenue.counterclinic.login.model.LoginCredentials;
 import com.codesvenue.counterclinic.login.model.LoginResponse;
-import com.codesvenue.counterclinic.qrcode.QRCode;
-import com.codesvenue.counterclinic.qrcode.QRCodeBuilder;
 import com.codesvenue.counterclinic.user.FileUploadFailedException;
 import com.codesvenue.counterclinic.user.UserConstants;
 import com.codesvenue.counterclinic.user.dao.UserRepository;
@@ -17,9 +15,6 @@ import com.codesvenue.counterclinic.user.model.UserMeta;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
-import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Log4j

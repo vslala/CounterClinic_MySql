@@ -15,20 +15,16 @@ import com.codesvenue.counterclinic.user.service.UserServiceImpl;
 import com.codesvenue.counterclinic.walkinappointment.TestData;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
-import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +33,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

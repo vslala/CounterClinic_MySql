@@ -10,7 +10,6 @@ import com.codesvenue.counterclinic.user.model.UserLogin;
 import com.codesvenue.counterclinic.user.model.UserRole;
 import com.codesvenue.counterclinic.walkinappointment.model.AppointmentStatus;
 import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointment;
-import com.codesvenue.counterclinic.walkinappointment.model.WalkInAppointmentInfoForm;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
