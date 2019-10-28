@@ -24,9 +24,7 @@ HELP.md
 /nbdist/
 /.nb-gradle/
 /build/
+/out
 
 ### VS Code ###
 .vscode/
-
-*.png
-!src/test/resources/*
