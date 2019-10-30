@@ -1,4 +1,4 @@
-package com.codesvenue.counterclinic.clinic.model;
+package com.codesvenue.counterclinic.setting.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

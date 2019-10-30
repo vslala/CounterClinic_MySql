@@ -2,7 +2,7 @@ package com.codesvenue.counterclinic.user.dao;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicRoom;
-import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.setting.model.Setting;
 import com.codesvenue.counterclinic.configuration.DateTimeConstants;
 import com.codesvenue.counterclinic.qrcode.QRCode;
 import com.codesvenue.counterclinic.user.UserConstants;

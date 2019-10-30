@@ -2,7 +2,7 @@ package com.codesvenue.counterclinic.user.service;
 
 import com.codesvenue.counterclinic.clinic.model.Clinic;
 import com.codesvenue.counterclinic.clinic.model.ClinicForm;
-import com.codesvenue.counterclinic.clinic.model.Setting;
+import com.codesvenue.counterclinic.setting.model.Setting;
 import com.codesvenue.counterclinic.login.model.LoginCredentials;
 import com.codesvenue.counterclinic.login.model.LoginResponse;
 import com.codesvenue.counterclinic.user.model.User;
