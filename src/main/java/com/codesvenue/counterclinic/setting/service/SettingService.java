@@ -10,4 +10,6 @@ public interface SettingService {
     List<Setting> getAllSettings();
 
     Setting createNewSetting(Setting settingInfo);
+
+    Boolean deleteSetting(Integer settingId);
 }

@@ -16,9 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+
 import static com.codesvenue.counterclinic.fixtures.AppointmentMother.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,5 +57,16 @@ public class SettingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value("/setting/1"));
+    }
+
+    @Test
+    public void itShouldGetAllSettingsStoredInTheDatabase() throws Exception {
+        // Given
+        given(settingService.deleteSetting(anyInt())).willReturn(true);
+
+        // When
+        this.mockMvc.perform(delete("/setting/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(true));
     }
 }

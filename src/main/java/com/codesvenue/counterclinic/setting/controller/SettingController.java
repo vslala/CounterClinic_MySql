@@ -30,7 +30,13 @@ public class SettingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Setting>> getAllSettings() {
-        return ResponseEntity.ok(settingService.getAllSettings());
+    public ResponseEntity<Response<List<Setting>>> getAllSettings() {
+        return ResponseEntity.ok(Response.newInstance().data(settingService.getAllSettings()));
+    }
+
+    @DeleteMapping("/{settingId}")
+    public ResponseEntity<Response<Boolean>> deleteSetting(@PathVariable Integer settingId) {
+        log.debug(String.format("Deleting setting with id: %s", settingId) );
+        return ResponseEntity.ok(Response.newInstance().data(settingService.deleteSetting(settingId)));
     }
 }

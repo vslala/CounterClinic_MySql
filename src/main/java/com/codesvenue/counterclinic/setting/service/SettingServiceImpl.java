@@ -17,4 +17,9 @@ public class SettingServiceImpl implements SettingService {
     public Setting createNewSetting(Setting settingInfo) {
         return null;
     }
+
+    @Override
+    public Boolean deleteSetting(Integer settingId) {
+        return null;
+    }
 }
