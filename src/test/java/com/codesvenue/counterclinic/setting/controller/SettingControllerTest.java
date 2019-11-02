@@ -69,4 +69,16 @@ public class SettingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(true));
     }
+
+    @Test
+    public void itShouldGetSettingByItsId() throws Exception {
+        // Given
+        Setting result = Setting.newInstance("test", "test");
+        given(settingService.getSetting(anyInt())).willReturn(result);
+
+        // When
+        this.mockMvc.perform(get("/setting/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.settingName").value("test"));
+    }
 }

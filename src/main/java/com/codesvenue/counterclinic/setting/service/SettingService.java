@@ -12,4 +12,6 @@ public interface SettingService {
     Setting createNewSetting(Setting settingInfo);
 
     Boolean deleteSetting(Integer settingId);
+
+    Setting getSetting(int settingId);
 }
