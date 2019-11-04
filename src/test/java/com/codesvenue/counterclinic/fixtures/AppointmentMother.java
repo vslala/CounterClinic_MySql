@@ -3,11 +3,15 @@ package com.codesvenue.counterclinic.fixtures;
 import com.codesvenue.counterclinic.login.model.LoginCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NoArgsConstructor;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.KeyHolder;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AppointmentMother {
@@ -99,6 +103,43 @@ public class AppointmentMother {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException();
+        }
+    }
+
+    @NoArgsConstructor
+    public static class MockKeyHolder implements KeyHolder {
+
+        private Number key;
+
+        public void setKey(Number key) {
+            this.key = key;
+        }
+
+        public MockKeyHolder(Number key) {
+            this.key = key;
+        }
+
+        public static MockKeyHolder newInstance() {
+            return new MockKeyHolder();
+        }
+
+        public static MockKeyHolder newInstance(Number key) {
+            return new MockKeyHolder(key);
+        }
+
+        @Override
+        public Number getKey() throws InvalidDataAccessApiUsageException {
+            return key;
+        }
+
+        @Override
+        public Map<String, Object> getKeys() throws InvalidDataAccessApiUsageException {
+            return null;
+        }
+
+        @Override
+        public List<Map<String, Object>> getKeyList() {
+            return null;
         }
     }
 }
