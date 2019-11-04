@@ -8,15 +8,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Arrays;
 
 import static com.codesvenue.counterclinic.fixtures.AppointmentMother.*;
 import static org.mockito.BDDMockito.*;
@@ -48,7 +43,7 @@ public class SettingControllerTest {
     public void itShouldCreateNewSettingsInTheDatabase() throws Exception {
         // Given
         Setting newSetting = new Setting("test", "testValue");
-        given(settingService.createNewSetting(any())).willReturn(Setting.newInstance("test", "testValue").settingId(1));
+        given(settingService.createOrUpdateSetting(any())).willReturn(Setting.newInstance("test", "testValue").settingId(1));
 
         // When
         this.mockMvc.perform(post("/setting")

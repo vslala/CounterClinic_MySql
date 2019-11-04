@@ -9,9 +9,11 @@ import java.util.List;
 public interface SettingService {
     List<Setting> getAllSettings();
 
-    Setting createNewSetting(Setting settingInfo);
+    Setting createOrUpdateSetting(Setting settingInfo);
 
     Boolean deleteSetting(Integer settingId);
 
     Setting getSetting(int settingId);
+
+    Setting getSetting(String settingName);
 }

@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
@@ -25,7 +24,7 @@ public class SettingController {
     @PostMapping
     public ResponseEntity<Response<String>> upsertNewSetting(@RequestBody Setting newSetting) {
         log.debug(String.format("Creating new setting with: %s", newSetting));
-        Setting setting = this.settingService.createNewSetting(newSetting);
+        Setting setting = this.settingService.createOrUpdateSetting(newSetting);
         return ResponseEntity.ok(Response.newInstance().data("/setting/" + setting.getSettingId()));
     }
 
