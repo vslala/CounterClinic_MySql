@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
@@ -34,12 +33,17 @@ public class SettingDaoImpl implements SettingDao {
 
     @Override
     public Optional<Setting> fetchSettingByName(String settingName) {
-        return Optional.empty();
+        final String sql = "SELECT setting_id, setting_name, setting_value FROM settings WHERE setting_name = :settingName";
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource().addValue("settingName", settingName),
+                Setting.SettingRowMapper.newInstance())
+                .stream().findFirst();
     }
 
     @Override
     public List<Setting> fetchAllSettings() {
-        return null;
+        final String sql = "SELECT setting_id, setting_name, setting_value from settings";
+        return jdbcTemplate.query(sql, Setting.SettingRowMapper.newInstance());
     }
 
     @Override

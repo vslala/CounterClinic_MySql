@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -101,6 +102,34 @@ public class SettingDaoImplTest {
 
         // Then
         assertTrue(setting.isEmpty());
+    }
+
+    @Test
+    public void itShouldFetchSettingByItsNameFromTheDatabase() {
+        // Given
+        String settingName = "test";
+        when(namedParameterJdbcTemplate.query(anyString(), any(SqlParameterSource.class), any(RowMapper.class)))
+                .thenReturn(Arrays.asList(Setting.newInstance("test", "test")));
+
+        // When
+        Optional<Setting> setting = settingDao.fetchSettingByName(settingName);
+
+        // Then
+        assertTrue(setting.isPresent());
+    }
+
+    @Test
+    public void itShouldFetchAllSettingsFromTheDatabase() {
+        // Given
+        when(namedParameterJdbcTemplate.query(anyString(), any(RowMapper.class)))
+                .thenReturn(Arrays.asList(Setting.newInstance("test", "test")));
+
+        // When
+        List<Setting> settings = settingDao.fetchAllSettings();
+
+        // Then
+        assertFalse(settings.isEmpty());
+        assertEquals(1, settings.size());
     }
 
 

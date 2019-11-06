@@ -22,6 +22,10 @@ public class Response<T> {
         return new Response<>();
     }
 
+    public static Response newInstance(Object data) {
+        return new Response<>(data);
+    }
+
     public Response<T> data(T data) {
         this.data = data;
         return this;

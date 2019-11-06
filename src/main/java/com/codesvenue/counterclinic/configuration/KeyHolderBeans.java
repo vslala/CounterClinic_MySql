@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeyHolderBeans {
 
-    @Profile("!default")
+//    @Profile("!default")
     @Bean
     public GeneratedKeyHolder defaultKeyHolder() {
         return new GeneratedKeyHolder();
